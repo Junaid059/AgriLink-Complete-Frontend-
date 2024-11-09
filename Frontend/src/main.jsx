@@ -8,7 +8,7 @@ import Home from './Home.jsx';
 
 function ProtectedRoute({ children }) {
   // Replace this with actual authentication check
-  const isAuthenticated = false; // Set to true if user is authenticated
+  const isAuthenticated = true; // Set to true if user is authenticated
 
   return isAuthenticated ? children : <Navigate to="/Auth" />;
 }
