@@ -1,16 +1,16 @@
-
-import './App.css'
-import Home from './Home'
+import './App.css';
+import Home from './Comps/Home';
+import LoginSignup from './Auth/LoginSignup';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
-    <Home></Home>
-        
+      <Home></Home>
+      <LoginSignup />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

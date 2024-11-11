@@ -1,13 +1,114 @@
-// Import necessary modules from your libraries
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Play, ArrowRight } from 'lucide-react';
-// import Image from 'next/image';
+import {
+  Play,
+  ArrowRight,
+  Menu,
+  X,
+  PhoneCall,
+  Mail,
+  Twitter,
+  Facebook,
+  Instagram,
+} from 'lucide-react';
+import { useState } from 'react';
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen w-full flex flex-col">
+      <header className="bg-[#f8f5f0] w-full sticky top-0 z-50">
+        {/* Top Section */}
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center border-b border-gray-200">
+          <Link
+            to="/"
+            className="flex items-center text-2xl font-bold text-gray-800"
+          >
+            AgriLink
+            <span className="text-sm font-medium text-green-600 ml-2"></span>
+          </Link>
+
+          {/* Contact Info */}
+          <div className="hidden md:flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <PhoneCall className="text-green-600 w-5 h-5" />
+              <span className="text-sm text-gray-700">
+                Call anytime +98 (000) - 9630
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Mail className="text-green-600 w-5 h-5" />
+              <span className="text-sm text-gray-700">ambed@agrios.com</span>
+            </div>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex space-x-4">
+            <Twitter className="text-gray-500 hover:text-green-600 cursor-pointer" />
+            <Facebook className="text-gray-500 hover:text-green-600 cursor-pointer" />
+            <Instagram className="text-gray-500 hover:text-green-600 cursor-pointer" />
+          </div>
+        </div>
+
+        {/* Main Navbar */}
+        <nav className="container mx-auto px-4 py-3 flex justify-between items-center">
+          {/* Main Menu */}
+          <ul className="hidden md:flex space-x-8 text-gray-800 font-medium">
+            {['Home', 'About', 'Services', 'News', 'Shop', 'Contact'].map(
+              (item) => (
+                <li key={item} className="group relative">
+                  <Link
+                    to={`/${item.toLowerCase()}`}
+                    className="hover:text-green-600"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              )
+            )}
+          </ul>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden text-gray-700 focus:outline-none"
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <ul className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg p-4 space-y-4">
+              {[
+                'Home',
+                'About',
+                'Services',
+                'Projects',
+                'News',
+                'Shop',
+                'Contact',
+              ].map((item) => (
+                <li key={item}>
+                  <Link
+                    to={`/${item.toLowerCase()}`}
+                    className="block text-gray-800 hover:text-green-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </nav>
+      </header>
+
       {/* Hero Section */}
       <section className="relative h-[600px]">
         <img
