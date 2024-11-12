@@ -5,10 +5,11 @@ import {
   createBrowserRouter,
   Navigate,
 } from 'react-router-dom';
-import App from './App.jsx';
 import './index.css';
 import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
+import Market from './Comps/marketplace/Market.jsx';
+import Product from './Comps/marketplace/Product.jsx';
 
 function ProtectedRoute({ children }) {
   // Replace this with actual authentication check
@@ -27,6 +28,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Home />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/marketplace',
+    element: (
+      <ProtectedRoute>
+        <Market />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/marketplace/product/:id',
+    element: (
+      <ProtectedRoute>
+        <Product />
       </ProtectedRoute>
     ),
   },

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import {
   Play,
@@ -19,7 +20,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <header className="bg-[#f8f5f0] w-full sticky top-0 z-50">
+      <header className="bg-[#f8f5f0] w-full sticky top-0 z-50 shadow-md">
         {/* Top Section */}
         <div className="container mx-auto px-4 py-2 flex justify-between items-center border-b border-gray-200">
           <Link
@@ -56,18 +57,23 @@ export default function Home() {
         <nav className="container mx-auto px-4 py-3 flex justify-between items-center">
           {/* Main Menu */}
           <ul className="hidden md:flex space-x-8 text-gray-800 font-medium">
-            {['Home', 'About', 'Services', 'News', 'Shop', 'Contact'].map(
-              (item) => (
-                <li key={item} className="group relative">
-                  <Link
-                    to={`/${item.toLowerCase()}`}
-                    className="hover:text-green-600"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              )
-            )}
+            {[
+              'Home',
+              'About',
+              'Services',
+              'News',
+              'MarketPlace',
+              'Contact',
+            ].map((item) => (
+              <li key={item} className="group relative">
+                <Link
+                  to={`/${item.toLowerCase()}`}
+                  className="hover:text-green-600"
+                >
+                  {item}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           {/* Mobile Menu Button */}
@@ -91,7 +97,7 @@ export default function Home() {
                 'Services',
                 'Projects',
                 'News',
-                'Shop',
+                'MarketPlace',
                 'Contact',
               ].map((item) => (
                 <li key={item}>
@@ -309,50 +315,64 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
+      <footer className="bg-gray-900 text-white mt-12">
+        <div className="container mx-auto px-4 py-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h4 className="text-lg font-bold mb-4">About Us</h4>
-              <p className="text-gray-400">
-                Leading the way in sustainable and organic farming practices.
+              <h4 className="text-lg font-semibold mb-4">AgGro</h4>
+              <p className="text-gray-400 text-sm">
+                Your trusted source for fresh produce.
               </p>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+              <h4 className="text-lg font-semibold mb-4">Explore</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link to="/" className="text-gray-400 hover:text-white">
-                    Home
+                  <Link to="#" className="text-gray-400 hover:text-white">
+                    About Us
                   </Link>
                 </li>
                 <li>
-                  <Link to="#about" className="text-gray-400 hover:text-white">
-                    About
+                  <Link to="#" className="text-gray-400 hover:text-white">
+                    Products
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="#services"
-                    className="text-gray-400 hover:text-white"
-                  >
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="#contact"
-                    className="text-gray-400 hover:text-white"
-                  >
+                  <Link to="#" className="text-gray-400 hover:text-white">
                     Contact
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">Contact Info</h4>
-              <p className="text-gray-400">Phone: +123 456 789</p>
-              <p className="text-gray-400">Email: info@agrico.com</p>
+              <h4 className="text-lg font-semibold mb-4">Help</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="#" className="text-gray-400 hover:text-white">
+                    Shipping
+                  </Link>
+                </li>
+                <li>
+                  <Link to="#" className="text-gray-400 hover:text-white">
+                    Returns
+                  </Link>
+                </li>
+                <li>
+                  <Link to="#" className="text-gray-400 hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Newsletter</h4>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter your email"
+                  className="bg-gray-800 border-gray-700"
+                />
+                <Button variant="secondary">Subscribe</Button>
+              </div>
             </div>
           </div>
         </div>
