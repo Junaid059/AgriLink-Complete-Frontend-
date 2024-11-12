@@ -15,104 +15,92 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+function SearchIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
 
+function ShoppingCartIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="8" cy="21" r="1" />
+      <circle cx="19" cy="21" r="1" />
+      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+    </svg>
+  );
+}
+
+function Home() {
+  const handleAddToCart = (product) => {
+    addToCart(product); // This adds the product to the cart
+  };
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <header className="bg-[#f8f5f0] w-full sticky top-0 z-50 shadow-md">
-        {/* Top Section */}
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center border-b border-gray-200">
-          <Link
-            to="/"
-            className="flex items-center text-2xl font-bold text-gray-800"
-          >
-            AgriLink
-            <span className="text-sm font-medium text-green-600 ml-2"></span>
-          </Link>
-
-          {/* Contact Info */}
-          <div className="hidden md:flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <PhoneCall className="text-green-600 w-5 h-5" />
-              <span className="text-sm text-gray-700">
-                Call anytime +98 (000) - 9630
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="text-green-600 w-5 h-5" />
-              <span className="text-sm text-gray-700">ambed@agrios.com</span>
-            </div>
-          </div>
-
-          {/* Social Icons */}
-          <div className="flex space-x-4">
-            <Twitter className="text-gray-500 hover:text-green-600 cursor-pointer" />
-            <Facebook className="text-gray-500 hover:text-green-600 cursor-pointer" />
-            <Instagram className="text-gray-500 hover:text-green-600 cursor-pointer" />
-          </div>
-        </div>
-
-        {/* Main Navbar */}
-        <nav className="container mx-auto px-4 py-3 flex justify-between items-center">
-          {/* Main Menu */}
-          <ul className="hidden md:flex space-x-8 text-gray-800 font-medium">
-            {[
-              'Home',
-              'About',
-              'Services',
-              'News',
-              'MarketPlace',
-              'Contact',
-            ].map((item) => (
-              <li key={item} className="group relative">
-                <Link
-                  to={`/${item.toLowerCase()}`}
-                  className="hover:text-green-600"
-                >
-                  {item}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-700 focus:outline-none"
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <ul className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg p-4 space-y-4">
+      <header className="border-b">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-6">
+            <Link
+              to="/"
+              className="text-xl font-bold text-green-600 hover:text-green-700 transition-colors"
+            >
+              AgriLink
+            </Link>
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center gap-6">
               {[
                 'Home',
                 'About',
                 'Services',
-                'Projects',
-                'News',
                 'MarketPlace',
+                'News',
+                'Blog',
                 'Contact',
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    to={`/${item.toLowerCase()}`}
-                    className="block text-gray-800 hover:text-green-600"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item}
-                  </Link>
-                </li>
+              ].map((item, index) => (
+                <Link
+                  key={index}
+                  to={`/${item.toLowerCase()}`}
+                  className="text-sm hover:text-green-600 transition-colors"
+                >
+                  {item}
+                </Link>
               ))}
-            </ul>
-          )}
-        </nav>
+            </nav>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button size="icon" variant="ghost">
+              <SearchIcon className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="ghost">
+              <ShoppingCartIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -380,3 +368,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;

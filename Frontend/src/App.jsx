@@ -5,12 +5,7 @@ import LoginSignup from './Auth/LoginSignup';
 function App() {
   const [count, setCount] = useState(0);
 
-  return (
-    <>
-      <Home></Home>
-      <LoginSignup />
-    </>
-  );
+  return <></>;
 }
 
 export default App;

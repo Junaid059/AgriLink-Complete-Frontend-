@@ -1,4 +1,5 @@
-import { StrictMode, useState } from 'react';
+// src/main.jsx
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   RouterProvider,
@@ -10,19 +11,16 @@ import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
+import CartProvider from './context/CartContext';
+import { Toaster } from './components/ui/toaster';
 
 function ProtectedRoute({ children }) {
-  // Replace this with actual authentication check
-  const isAuthenticated = true; // Set to true if user is authenticated
-
+  const isAuthenticated = true; // Replace with actual authentication check
   return isAuthenticated ? children : <Navigate to="/signup" />;
 }
 
 const router = createBrowserRouter([
-  {
-    path: '/signup',
-    element: <LoginSignup />,
-  },
+  { path: '/signup', element: <LoginSignup /> },
   {
     path: '/',
     element: (
@@ -51,6 +49,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
   </StrictMode>
 );

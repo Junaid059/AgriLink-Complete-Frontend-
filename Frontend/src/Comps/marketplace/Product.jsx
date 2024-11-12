@@ -82,6 +82,22 @@ const mockProducts = [
   },
 ];
 
+function ProductList({ onAddToCart }) {
+  return (
+    <div>
+      <h1>Products</h1>
+      <div className="product-list">
+        {mockProducts.map((product) => (
+          <div key={product.id} className="product">
+            <h3>{product.name}</h3>
+            <p>Price: ${product.price.toFixed(2)}</p>
+            <button onClick={() => onAddToCart(product)}>Add to Cart</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function SearchIcon(props) {
   return (
     <svg
@@ -126,6 +142,9 @@ function ShoppingCartIcon(props) {
 function Product() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [showToast, setShowToast] = useState(false);
 
   // Fetch product data based on the ID
   useEffect(() => {
@@ -135,6 +154,18 @@ function Product() {
     setProduct(fetchedProduct);
   }, [id]);
 
+  const handleAddToCart = (selectedProduct) => {
+    const cartItem = {
+      id: selectedProduct.id,
+      name: selectedProduct.name,
+      price: selectedProduct.price,
+      quantity: quantity,
+    };
+    setCartItems([...cartItems, cartItem]);
+  };
+
+  const cartCount = cartItems.length;
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -142,7 +173,7 @@ function Product() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b">
+      <header className="border-b p-4 flex justify-end">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link
@@ -177,7 +208,11 @@ function Product() {
               <SearchIcon className="h-4 w-4" />
             </Button>
             <Button size="icon" variant="ghost">
-              <ShoppingCartIcon className="h-4 w-4" />
+              <div className="cart-info">
+                <span>
+                  <ShoppingCartIcon className="h-4 w-4" /> {cartCount}
+                </span>
+              </div>
             </Button>
           </div>
         </div>
@@ -230,11 +265,17 @@ function Product() {
                 <Input
                   type="number"
                   min="1"
-                  defaultValue="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
                   className="w-20 border-0"
                 />
               </div>
-              <Button className="bg-primary text-white">Add to Cart</Button>
+              <Button
+                className="bg-primary text-white"
+                onClick={() => handleAddToCart(product)}
+              >
+                Add to Cart
+              </Button>
             </div>
 
             <Card>
