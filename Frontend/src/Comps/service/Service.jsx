@@ -85,75 +85,74 @@ function TwitterIcon(props) {
   );
 }
 
-function Market() {
+function Service() {
   const navigate = useNavigate();
   const handleProductClick = (id) => {
-    // Navigate to the product page with the specified id
-    navigate(`/marketplace/product/${id}`);
+    navigate(`/service/tools/${id}`);
   };
   const products = [
     {
       id: 1,
-      name: 'Apples',
-      price: 2.99,
-      rating: 4.5,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Tractor',
+      price: 15000.99,
+      rating: 4.8,
+      image: '/tractor.svg?height=200&width=200',
     },
     {
       id: 2,
-      name: 'Bananas',
-      price: 1.99,
-      rating: 4.3,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Plough',
+      price: 499.99,
+      rating: 4.5,
+      image: '/plough.svg?height=200&width=200',
     },
     {
       id: 3,
-      name: 'Carrots',
-      price: 1.49,
-      rating: 4.4,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Seed Drill',
+      price: 1200.49,
+      rating: 4.6,
+      image: '/seed-drill.svg?height=200&width=200',
     },
     {
       id: 4,
-      name: 'Garlic',
-      price: 0.99,
-      rating: 4.2,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Harvester',
+      price: 25000.99,
+      rating: 4.7,
+      image: '/harvester.svg?height=200&width=200',
     },
     {
       id: 5,
-      name: 'Grapes',
-      price: 3.99,
-      rating: 4.6,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Sprinkler System',
+      price: 799.99,
+      rating: 4.4,
+      image: '/sprinkler-system.svg?height=200&width=200',
     },
     {
       id: 6,
-      name: 'Lettuce',
-      price: 1.99,
+      name: 'Rotavator',
+      price: 349.99,
       rating: 4.3,
-      image: '/placeholder.svg?height=200&width=200',
+      image: '/rotavator.svg?height=200&width=200',
     },
     {
       id: 7,
-      name: 'Onions',
-      price: 1.29,
+      name: 'Hand Tiller',
+      price: 99.49,
       rating: 4.1,
-      image: '/placeholder.svg?height=200&width=200',
+      image: '/hand-tiller.svg?height=200&width=200',
     },
     {
       id: 8,
-      name: 'Potatoes',
-      price: 2.49,
-      rating: 4.4,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Water Pump',
+      price: 399.99,
+      rating: 4.2,
+      image: '/water-pump.svg?height=200&width=200',
     },
     {
       id: 9,
-      name: 'Red Grapes',
-      price: 4.99,
-      rating: 4.7,
-      image: '/placeholder.svg?height=200&width=200',
+      name: 'Cultivator',
+      price: 599.49,
+      rating: 4.6,
+      image: '/cultivator.svg?height=200&width=200',
     },
   ];
 
@@ -206,7 +205,7 @@ function Market() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="container mx-auto px-4">
           <h1 className="relative pt-16 text-center text-3xl font-bold text-white">
-            Our Shop
+            Our Services
           </h1>
         </div>
       </div>
@@ -231,17 +230,15 @@ function Market() {
             <div>
               <h2 className="mb-4 font-semibold">Categories</h2>
               <div className="space-y-2">
-                {['Fresh Vegetables', 'Fresh Fruits', 'Organic Foods'].map(
-                  (category, index) => (
-                    <Link
-                      key={index}
-                      to="#"
-                      className="block text-sm hover:text-green-600"
-                    >
-                      {category}
-                    </Link>
-                  )
-                )}
+                {['Tolls', 'Machinery'].map((category, index) => (
+                  <Link
+                    key={index}
+                    to="#"
+                    className="block text-sm hover:text-green-600"
+                  >
+                    {category}
+                  </Link>
+                ))}
               </div>
             </div>
           </aside>
@@ -348,4 +345,4 @@ function Market() {
   );
 }
 
-export default Market;
+export default Service;

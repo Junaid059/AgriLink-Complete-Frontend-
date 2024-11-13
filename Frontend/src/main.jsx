@@ -13,6 +13,8 @@ import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
 import CartProvider from './context/CartContext';
 import { Toaster } from './components/ui/toaster';
+import Service from './Comps/service/service';
+import Tools from './Comps/service/tools';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -42,6 +44,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Product />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/services',
+    element: (
+      <ProtectedRoute>
+        <Service />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/service/tools/:id',
+    element: (
+      <ProtectedRoute>
+        <Tools />
       </ProtectedRoute>
     ),
   },

@@ -74,20 +74,20 @@ function Home() {
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-6">
               {[
-                'Home',
-                'About',
-                'Services',
-                'MarketPlace',
-                'News',
-                'Blog',
-                'Contact',
+                { name: 'Home', path: '/' },
+                { name: 'About', path: '/about' },
+                { name: 'Services', path: '/services' },
+                { name: 'MarketPlace', path: '/marketplace' },
+                { name: 'News', path: '/news' },
+                { name: 'Blog', path: '/blog' },
+                { name: 'Contact', path: '/contact' },
               ].map((item, index) => (
                 <Link
                   key={index}
-                  to={`/${item.toLowerCase()}`}
+                  to={item.path}
                   className="text-sm hover:text-green-600 transition-colors"
                 >
-                  {item}
+                  {item.name}
                 </Link>
               ))}
             </nav>
