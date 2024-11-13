@@ -1,4 +1,3 @@
-// src/components/ChatPopup.jsx
 import React, { useState } from 'react';
 
 function Chat() {
@@ -9,7 +8,6 @@ function Chat() {
 
   return (
     <div>
-      {/* Button to open chat form */}
       <button
         onClick={openForm}
         className="fixed bottom-6 right-6 bg-green-600 text-white font-semibold py-3 px-5 rounded-full shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition-opacity"
@@ -17,11 +15,9 @@ function Chat() {
         💬 Open Chat
       </button>
 
-      {/* Chat popup box */}
       {isOpen && (
         <div className="fixed bottom-0 right-4 w-80 border border-gray-200 rounded-lg shadow-lg bg-white z-50">
           <form className="p-4 flex flex-col">
-            {/* Header with title and close button */}
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-lg font-semibold text-green-600">Chat</h1>
               <button
@@ -33,7 +29,6 @@ function Chat() {
               </button>
             </div>
 
-            {/* Message label and textarea */}
             <label htmlFor="msg" className="text-gray-600 font-medium">
               Message
             </label>
@@ -46,7 +41,6 @@ function Chat() {
               rows="5"
             ></textarea>
 
-            {/* Send button */}
             <button
               type="submit"
               className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition-opacity w-full focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -54,7 +48,6 @@ function Chat() {
               Send
             </button>
 
-            {/* Cancel button */}
             <button
               type="button"
               onClick={closeForm}
