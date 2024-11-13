@@ -15,6 +15,7 @@ import CartProvider from './context/CartContext';
 import { Toaster } from './components/ui/toaster';
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
+import Chat from './Comps/collaboration/Chat';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -69,6 +70,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <CartProvider>
       <RouterProvider router={router} />
+      <Chat />
     </CartProvider>
   </StrictMode>
 );
