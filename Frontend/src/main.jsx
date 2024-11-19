@@ -12,10 +12,10 @@ import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
 import CartProvider from './context/CartContext';
-import { Toaster } from './components/ui/toaster';
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
+import Blog from './Comps/collaboration/blog';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -61,6 +61,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Tools />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/blogs',
+    element: (
+      <ProtectedRoute>
+        <Blog />
       </ProtectedRoute>
     ),
   },
