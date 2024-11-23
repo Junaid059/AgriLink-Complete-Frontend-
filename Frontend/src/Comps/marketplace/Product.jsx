@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Star } from 'lucide-react';
 import { Play, ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
-
+// import { DeleteIcon } from 'lucide-react';
 // Mock Data (Replace with actual API call)
 const mockProducts = [
   {
@@ -129,7 +129,7 @@ function Product() {
   const [product, setProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const [showToast, setShowToast] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Fetch product data based on the ID
   useEffect(() => {
@@ -140,16 +140,36 @@ function Product() {
   }, [id]);
 
   const handleAddToCart = (selectedProduct) => {
-    const cartItem = {
-      id: selectedProduct.id,
-      name: selectedProduct.name,
-      price: selectedProduct.price,
-      quantity: quantity,
-    };
-    setCartItems([...cartItems, cartItem]);
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.id === selectedProduct.id
+    );
+
+    if (existingItemIndex !== -1) {
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[existingItemIndex].quantity += quantity;
+      setCartItems(updatedCartItems);
+    } else {
+      const cartItem = {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        price: selectedProduct.price,
+        quantity: quantity,
+      };
+      setCartItems((prevState) => [...prevState, cartItem]);
+    }
   };
 
-  const cartCount = cartItems.length;
+  const handleRemoveFromCart = (id) => {
+    const updatedCart = cartItems.filter((item) => item.id !== id);
+    setCartItems(updatedCart);
+  };
+
+  // Toggle the cart panel
+  const toggleCartPanel = () => {
+    setIsCartOpen((prevState) => !prevState);
+  };
+
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -177,6 +197,7 @@ function Product() {
                 { name: 'News', path: '/news' },
                 { name: 'Blog', path: '/blogs' },
                 { name: 'Contact', path: '/contact' },
+                { name: 'Feedback', path: '/feedback' },
               ].map((item, index) => (
                 <Link
                   key={index}
@@ -258,6 +279,7 @@ function Product() {
               <Button
                 className="bg-primary text-white"
                 onClick={() => handleAddToCart(product)}
+                disabled={quantity < 1}
               >
                 Add to Cart
               </Button>
@@ -271,6 +293,29 @@ function Product() {
             </Card>
           </div>
         </div>
+
+        {/* Cart Side Panel */}
+        {cartItems.length > 0 ? (
+          <div className="space-y-4">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex justify-between">
+                <span>
+                  {item.name} x {item.quantity}
+                </span>
+                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleRemoveFromCart(item.id)}
+                >
+                  <span>Remove</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>Your cart is empty.</p>
+        )}
 
         {/* Reviews Section */}
         <div className="mt-12">

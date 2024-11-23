@@ -1,26 +1,30 @@
-import React, { createContext, useState } from 'react';
-import { Toaster } from '@/components/ui/toaster';
+// CartContext.js
+import React, { createContext, useContext, useState } from 'react';
 
-export const CartContext = createContext();
+const CartContext = createContext();
+
+const useCart = () => {
+  return useContext(CartContext);
+};
 
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
 
-  // Function to add item to cart
   const addToCart = (item) => {
-    setCartItems((prevItems) => [...prevItems, item]);
+    setCartItems([...cartItems, item]);
+  };
 
-    // Show a success message using Toaster
-    toast.success('Item added to cart!');
+  const removeFromCart = (index) => {
+    setCartItems(cartItems.filter((_, i) => i !== index));
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
       {children}
-      <Toaster position="top-right" />{' '}
-      {/* Add Toaster component to display notifications */}
     </CartContext.Provider>
   );
 };
 
+// Default export
 export default CartProvider;
+export { CartContext };

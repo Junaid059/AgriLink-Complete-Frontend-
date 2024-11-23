@@ -180,6 +180,7 @@ function Market() {
                 { name: 'News', path: '/news' },
                 { name: 'Blog', path: '/blogs' },
                 { name: 'Contact', path: '/contact' },
+                { name: 'Feedback', path: '/feedback' },
               ].map((item, index) => (
                 <Link
                   key={index}

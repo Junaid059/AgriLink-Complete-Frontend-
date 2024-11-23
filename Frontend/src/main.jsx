@@ -16,6 +16,7 @@ import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
 import Blog from './Comps/collaboration/blog';
+import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -72,13 +73,22 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  {
+    path: '/feedback',
+    element: (
+      <ProtectedRoute>
+        <FeedbackForm />
+      </ProtectedRoute>
+    ),
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <CartProvider>
       <RouterProvider router={router} />
-      <Chat />
+      {/* <Chat /> */}
     </CartProvider>
   </StrictMode>
 );
