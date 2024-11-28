@@ -11,12 +11,14 @@ import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
 import { CartProvider } from '/src/Comps/context/CartContext.jsx'; // Default import
-
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
 import Blog from './Comps/collaboration/blog';
 import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
+import WeatherDashboard from './Comps/weather/WeatherDashboard';
+import FarmerCalendar from './Comps/weather/FarmerCalender';
+import SubsidyRegulations from './Comps/ReguSubsidies/SubsidyRegulations';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -74,10 +76,35 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/weather',
+    element: (
+      <ProtectedRoute>
+        <WeatherDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/feedback',
     element: (
       <ProtectedRoute>
         <FeedbackForm />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/farmerCalendar',
+    element: (
+      <ProtectedRoute>
+        <FarmerCalendar />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: '/subsidyregulations',
+    element: (
+      <ProtectedRoute>
+        <SubsidyRegulations />
       </ProtectedRoute>
     ),
   },
