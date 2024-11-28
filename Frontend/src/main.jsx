@@ -1,4 +1,3 @@
-// src/main.jsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -11,7 +10,8 @@ import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
-import CartProvider from './context/CartContext';
+import { CartProvider } from '/src/Comps/context/CartContext.jsx'; // Default import
+
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
@@ -73,7 +73,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: '/feedback',
     element: (
@@ -84,11 +83,13 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById('root')).render(
+const Root = () => (
   <StrictMode>
     <CartProvider>
       <RouterProvider router={router} />
-      {/* <Chat /> */}
+      <Chat></Chat>
     </CartProvider>
   </StrictMode>
 );
+
+createRoot(document.getElementById('root')).render(<Root />);
