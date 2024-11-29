@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle } from 'react-icons/fa';
-import { Button } from '@/components/ui/button'; // Assuming you have a Button component
+import { Button } from '@/components/ui/button';
 
 const LoginSignup = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,12 +20,40 @@ const LoginSignup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const isAuthSuccessful = true;
+    // Hardcoded credentials
+    const adminCredentials = {
+      email: 'admin@gmail.com',
+      password: 'admin123',
+    };
+    const govCredentials = {
+      email: 'gov@gmail.com',
+      password: 'gov123',
+    };
+    const userCredentials = {
+      email: 'user@gmail.com',
+      password: 'user123',
+    };
 
-    if (isAuthSuccessful) {
+    // Authentication logic
+    if (
+      email === adminCredentials.email &&
+      password === adminCredentials.password
+    ) {
+      navigate('/admin-panel');
+    } else if (
+      email === govCredentials.email &&
+      password === govCredentials.password
+    ) {
+      navigate('/gov-dashboard');
+    } else if (
+      email === userCredentials.email &&
+      password === userCredentials.password
+    ) {
       navigate('/');
+    } else if (email && password) {
+      alert('Invalid email or password. Please try again.');
     } else {
-      alert(`${isLogin ? 'Login' : 'Signup'} failed. Please try again.`);
+      alert('Please enter both email and password.');
     }
   };
 
