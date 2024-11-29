@@ -1,26 +1,55 @@
-import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useState } from 'react';
 
 const ChatWindow = ({ onClose }) => {
   const [messages, setMessages] = useState([
     { text: 'Hello! How can I assist you today?', isUser: false },
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessages([...messages, { text: input, isUser: true }]);
+      const userMessage = { text: input, isUser: true };
+      setMessages([...messages, userMessage]);
       setInput('');
-      // Simulate bot response
-      setTimeout(() => {
+
+      try {
+        setIsLoading(true);
+        // Make API call
+
+        const response = await fetch('http://localhost:3000/chatbot/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: input }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const botMessage = {
+            text: data.response || 'Sorry, something went wrong.',
+            isUser: false,
+          };
+          setMessages((prev) => [...prev, botMessage]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              text: 'Failed to fetch response from the server.',
+              isUser: false,
+            },
+          ]);
+        }
+      } catch (error) {
         setMessages((prev) => [
           ...prev,
-          {
-            text: 'Thank you for your message. Our support team will get back to you soon.',
-            isUser: false,
-          },
+          { text: 'Error communicating with the server.', isUser: false },
         ]);
-      }, 1000);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -55,6 +84,13 @@ const ChatWindow = ({ onClose }) => {
             </span>
           </div>
         ))}
+        {isLoading && (
+          <div className="text-left mb-2">
+            <span className="inline-block p-2 rounded-lg bg-gray-100 text-gray-900">
+              Typing...
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Input Section */}
@@ -70,6 +106,7 @@ const ChatWindow = ({ onClose }) => {
           <button
             onClick={handleSend}
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none"
+            disabled={isLoading}
           >
             Send
           </button>
