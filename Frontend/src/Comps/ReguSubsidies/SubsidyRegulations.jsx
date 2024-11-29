@@ -8,7 +8,6 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
-import Header from '../Header';
 import Footer from '../Footer';
 
 function SubsidyRegulations() {
@@ -65,7 +64,6 @@ function SubsidyRegulations() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="container mx-auto py-8 px-4">
         <div className="flex justify-center space-x-4 mb-8">
           <Button

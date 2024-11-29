@@ -58,7 +58,6 @@ const FeedbackForm = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header></Header>
       <main className="flex-grow bg-gray-100 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-8">

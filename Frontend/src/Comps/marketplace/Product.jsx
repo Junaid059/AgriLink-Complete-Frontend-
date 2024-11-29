@@ -25,7 +25,6 @@ import {
 import { useCart } from '../context/CartContext';
 import CartButton from '../cart/CartButton';
 import CartPanel from '../cart/CartPanel';
-import Header from '../Header';
 import Footer from '../Footer';
 
 // Mock Data (Replace with actual API call)
@@ -135,7 +134,6 @@ function Product() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <Header />
 
       {/* Banner */}
       <div

@@ -14,7 +14,6 @@ import Footer from '../Footer';
 function Blog() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
       {/* Hero Section */}
       <div className="relative h-[300px] w-full">
         <div

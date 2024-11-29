@@ -5,7 +5,6 @@ import { Slider } from '@/components/ui/slider';
 import { Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Play, ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
-import Header from '../Header';
 import Footer from '../Footer';
 
 function Service() {
@@ -82,7 +81,7 @@ function Service() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <Header />
+
       {/* Hero */}
       <div className="relative h-48 bg-[url('/placeholder.svg')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/50" />

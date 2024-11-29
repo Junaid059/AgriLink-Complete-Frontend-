@@ -16,7 +16,6 @@ import h11 from '../public/h11.png';
 import h12 from '../public/h12.png';
 import h13 from '../public/h13.png';
 import h14 from '../public/h14.png';
-import Header from './Header';
 import Footer from './Footer';
 import { Play, ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 
@@ -26,8 +25,6 @@ function Home() {
   };
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <Header></Header>
-
       {/* Hero Section */}
       <section className="relative h-[600px]">
         <img
