@@ -31,6 +31,7 @@ export default function Header() {
               { name: 'Blog', path: '/blogs' },
               { name: 'Subsidy Regulations', path: '/subsidyregulations' },
               { name: 'Feedback', path: '/feedback' },
+              { name: 'Loan', path: '/loan' },
             ].map((item) => (
               <Link
                 key={item.path}

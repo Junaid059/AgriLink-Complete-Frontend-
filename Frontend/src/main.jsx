@@ -28,6 +28,8 @@ import Layout from './Comps/Crops/Layout';
 import ContributePage from './Comps/Crops/ContributePage';
 import DatasetPage from './Comps/Crops/DataSetPage';
 import ProfilePage from './Comps/Crops/ProfilePage';
+import LoanPage from './Comps/loan/LoanPage';
+import ExpertForum from './Comps/collaboration/ExpertForum';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -40,7 +42,7 @@ function AppLayout() {
       {/* Only one Header is rendered here */}
       <Header />
       <Outlet />
-      <Chat />
+      {/* <Chat /> */}
     </>
   );
 }
@@ -184,6 +186,23 @@ const router = createBrowserRouter([
             <Layout>
               <ProfilePage />
             </Layout>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/loan',
+        element: (
+          <ProtectedRoute>
+            <LoanPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/expert-forum',
+        element: (
+          <ProtectedRoute>
+            <ExpertForum />
           </ProtectedRoute>
         ),
       },

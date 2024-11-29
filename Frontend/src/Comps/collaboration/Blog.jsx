@@ -8,12 +8,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
-import Header from '../Header';
 import Footer from '../Footer';
+import { useNavigate } from 'react-router-dom';
 
 function Blog() {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate('/expert-forum'); // Replace with the route for your expert forum page
+  };
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col">
       {/* Hero Section */}
       <div className="relative h-[300px] w-full">
         <div
@@ -185,6 +190,14 @@ function Blog() {
           </Card>
         </div>
       </div>
+
+      {/* Floating Hover Button */}
+      <button
+        onClick={handleNavigate}
+        className="fixed bottom-4 right-4 p-4 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700"
+      >
+        Any Question?
+      </button>
 
       {/* Footer */}
       <Footer />
