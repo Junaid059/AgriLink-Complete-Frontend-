@@ -30,6 +30,7 @@ import DatasetPage from './Comps/Crops/DataSetPage';
 import ProfilePage from './Comps/Crops/ProfilePage';
 import LoanPage from './Comps/loan/LoanPage';
 import ExpertForum from './Comps/collaboration/ExpertForum';
+import Page from './Comps/AdminPanel/SupplyChain/Page';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -39,7 +40,6 @@ function ProtectedRoute({ children }) {
 function AppLayout() {
   return (
     <>
-      {/* Only one Header is rendered here */}
       <Header />
       <Outlet />
       {/* <Chat /> */}
@@ -203,6 +203,15 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ExpertForum />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/admin-panel/supply-chain',
+        element: (
+          <ProtectedRoute>
+            <Page />
           </ProtectedRoute>
         ),
       },

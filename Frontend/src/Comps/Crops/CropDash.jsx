@@ -6,7 +6,6 @@ function CropDash() {
   const [diagnosisResult, setDiagnosisResult] = useState(null);
 
   const handleDiagnosisSubmit = (formData) => {
-    // Simulate API call
     setTimeout(() => {
       setDiagnosisResult({
         status: 'Unhealthy',
