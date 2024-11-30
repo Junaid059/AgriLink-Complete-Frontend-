@@ -39,16 +39,19 @@ const LoginSignup = () => {
       email === adminCredentials.email &&
       password === adminCredentials.password
     ) {
+      setRole('admin'); // Update role in context
       navigate('/admin-panel');
     } else if (
       email === govCredentials.email &&
       password === govCredentials.password
     ) {
+      setRole('gov'); // Update role for other user types if needed
       navigate('/gov-dashboard');
     } else if (
       email === userCredentials.email &&
       password === userCredentials.password
     ) {
+      setRole('user');
       navigate('/');
     } else if (email && password) {
       alert('Invalid email or password. Please try again.');

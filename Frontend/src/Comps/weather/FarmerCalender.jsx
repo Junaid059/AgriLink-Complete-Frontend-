@@ -1,4 +1,4 @@
-import Header from '../Header';
+import Header from '../UserHeader';
 import Footer from '../Footer';
 import { Button } from '@/components/ui/button';
 import {

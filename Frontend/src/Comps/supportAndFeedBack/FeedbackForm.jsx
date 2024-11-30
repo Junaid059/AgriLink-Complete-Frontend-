@@ -17,7 +17,7 @@ import { Mail, MapPin, Phone, Loader2 } from 'lucide-react';
 import StarRating from './StarRating';
 import ChatWindow from './ChatWindow';
 import ConfirmModal from './ConfirmModal';
-import Header from '../Header';
+import Header from '../UserHeader';
 import Footer from '../Footer';
 
 const FeedbackForm = () => {

@@ -9,7 +9,7 @@ import { Play, ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import CartButton from '../cart/CartButton';
 import CartPanel from '../cart/CartPanel';
-import Header from '../Header';
+import Header from '../UserHeader';
 import Footer from '../Footer';
 
 // Mock Data (Replace with actual API call)

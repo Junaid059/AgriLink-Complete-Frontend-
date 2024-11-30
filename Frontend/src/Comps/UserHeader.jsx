@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react';
 import CartButton from './cart/CartButton';
 import CartPanel from './cart/CartPanel';
 
-export default function Header() {
+function UserHeader() {
   const location = useLocation();
   const isCropPage = location.pathname === '/crop';
 
@@ -91,3 +91,5 @@ export default function Header() {
     </header>
   );
 }
+
+export default UserHeader;

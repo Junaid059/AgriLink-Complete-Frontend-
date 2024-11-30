@@ -1,5 +1,5 @@
 import { Toaster } from '@/components/ui/toaster';
-import Header from '../Header'; // Adjust the import path based on your actual Header location
+import Header from '../UserHeader'; // Adjust the import path based on your actual Header location
 
 function Layout({ children }) {
   return (

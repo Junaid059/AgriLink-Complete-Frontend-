@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { LineChart } from 'lucide-react';
-import Header from '../Header';
+import Header from '../UserHeader';
 import Footer from '../Footer';
 
 function WeatherDashboard() {

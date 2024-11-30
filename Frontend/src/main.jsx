@@ -1,3 +1,4 @@
+import React, { useContext } from 'react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -7,8 +8,8 @@ import {
   Navigate,
 } from 'react-router-dom';
 import './index.css';
-import Header from './Comps/Header';
-import { CartProvider } from '/src/Comps/context/CartContext.jsx';
+import UserHeader from './Comps/UserHeader';
+import { CartProvider } from './Comps/context/CartContext.jsx';
 import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
@@ -31,18 +32,31 @@ import ProfilePage from './Comps/Crops/ProfilePage';
 import LoanPage from './Comps/loan/LoanPage';
 import ExpertForum from './Comps/collaboration/ExpertForum';
 import Page from './Comps/AdminPanel/SupplyChain/Page';
+import { AuthContext } from './Comps/context/AuthContext';
+import { AuthProvider } from './Comps/context/AuthContext';
+import AdminHeader from './Comps/AdminHeader';
+import ManagementPage from './Comps/AdminPanel/Management/ManagementPage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
   return isAuthenticated ? children : <Navigate to="/signup" />;
 }
 
+// function AdminProtectedRoute({ children }) {
+//   const { role } = useContext(AuthContext); // Context-based role check
+//   console.log('Current role:', role); // Log role to debug
+//   return role === 'admin' ? children : <Navigate to="/admin-panel" />;
+// }
+
 function AppLayout() {
+  // const { role } = useContext(AuthContext);
   return (
     <>
-      <Header />
+      {/* {role === 'admin' ? <AdminHeader /> : <UserHeader />} */}
+      <UserHeader />
+      {/* <AdminHeader/> */}
       <Outlet />
-      {/* <Chat /> */}
+      {/* <Chat/> */}
     </>
   );
 }
@@ -134,22 +148,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/admin-panel',
-        element: (
-          <ProtectedRoute>
-            <Admin />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/gov-dashboard',
-        element: (
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: '/crop',
         element: (
           <ProtectedRoute>
@@ -197,7 +195,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
       {
         path: '/expert-forum',
         element: (
@@ -206,12 +203,35 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
       {
-        path: '/admin-panel/supply-chain',
+        path: '/admin-panel',
+        element: (
+          <ProtectedRoute>
+            <Admin />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/supply-chain',
         element: (
           <ProtectedRoute>
             <Page />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/gov-dashboard',
+        element: (
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/Management',
+        element: (
+          <ProtectedRoute>
+            <ManagementPage />
           </ProtectedRoute>
         ),
       },
@@ -222,9 +242,11 @@ const router = createBrowserRouter([
 function Root() {
   return (
     <StrictMode>
+      {/* <AuthProvider> */}
       <CartProvider>
         <RouterProvider router={router} />
       </CartProvider>
+      {/* </AuthProvider> */}
     </StrictMode>
   );
 }
