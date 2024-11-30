@@ -39,7 +39,6 @@ function ProtectedRoute({ children }) {
 function AppLayout() {
   return (
     <>
-      {/* Only one Header is rendered here */}
       <Header />
       <Outlet />
       {/* <Chat /> */}
