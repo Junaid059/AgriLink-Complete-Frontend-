@@ -24,7 +24,11 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
+<<<<<<< HEAD
     "chart.js": "^4.4.6",
+=======
+    "axios": "^1.7.8",
+>>>>>>> 4b0010e646e471ca8ddfba31ab42c836499ecbd9
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",

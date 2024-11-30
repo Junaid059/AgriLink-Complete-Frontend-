@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Mail, MapPin, Phone, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StarRating from './StarRating';
-import ChatWindow from './ChatWindow';
-import ConfirmModal from './ConfirmModal';
-import Header from '../UserHeader';
-import Footer from '../Footer';
+
+
+import { addFeedback, addRating } from '../suppo../Header/apiservice'; // Import API functions
+
 
 const FeedbackForm = () => {
   const [formData, setFormData] = useState({
@@ -34,28 +26,65 @@ const FeedbackForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showChatWindow, setShowChatWindow] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setShowConfirmModal(true);
+  
+    const userId = null; // or use a mock userId like 'someUserId'
+    const ratedUserId = '507f191e810c19729de860ea'; // Replace with actual rated user's ID if available
+  
+    try {
+      // Submit the rating
+      const response = await fetch('http://localhost:3000/addrating', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          value: formData.rating,  // Rating value (1-5)
+          ratedUserId,             // ID of the user being rated
+          userId,                  // User's ID (even if null for now)
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to submit rating');
+      }
+  
+      const data = await response.json();
+      console.log('Rating submitted successfully:', data);
+  
+      // Submit the feedback as well
+      await fetch('http://localhost:3000/add-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: formData.feedback,
+          category: formData.category,
+          status: 'pending',  // or set dynamically
+        }),
+      });
+  
+      setIsSubmitted(true);  // Set to true once everything is successful
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    } finally {
+      setIsSubmitting(false);
+      setShowConfirmModal(true);  // Show confirmation modal on success
+    }
   };
+  
+  
 
-  const confirmSubmission = () => {
-    setIsSubmitted(true);
-    setShowConfirmModal(false);
-    console.log('Feedback submitted:', formData);
-  };
-
+  
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow bg-gray-100 py-12">
@@ -70,8 +99,7 @@ const FeedbackForm = () => {
                   Thank You for Your Feedback!
                 </h3>
                 <p className="text-gray-600 mb-8">
-                  Your input is valuable to us and will help improve our
-                  services.
+                  Your input is valuable to us and will help improve our services.
                 </p>
                 <Button
                   onClick={() => setIsSubmitted(false)}
@@ -123,9 +151,7 @@ const FeedbackForm = () => {
                       <SelectItem value="product">Product</SelectItem>
                       <SelectItem value="service">Service</SelectItem>
                       <SelectItem value="website">Website</SelectItem>
-                      <SelectItem value="customer-support">
-                        Customer Support
-                      </SelectItem>
+                      <SelectItem value="customer-support">Customer Support</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -213,14 +239,7 @@ const FeedbackForm = () => {
                     className="bg-green-600 text-white hover:bg-green-700"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'Submit Feedback'
-                    )}
+                    {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                   </Button>
                   <Button
                     type="button"
@@ -246,27 +265,6 @@ const FeedbackForm = () => {
           </div>
         </div>
       </main>
-
-      <Footer></Footer>
-
-      <Button
-        className="fixed bottom-4 right-4 bg-green-600 text-white hover:bg-green-700"
-        onClick={() => setShowChatWindow(true)}
-      >
-        Need Help?
-      </Button>
-
-      {showChatWindow && (
-        <ChatWindow onClose={() => setShowChatWindow(false)} />
-      )}
-
-      <ConfirmModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={confirmSubmission}
-        title="Confirm Submission"
-        message="Are you sure you want to submit this feedback?"
-      />
     </div>
   );
 };
