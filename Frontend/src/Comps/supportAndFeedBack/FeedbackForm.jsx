@@ -5,12 +5,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import StarRating from './StarRating';
 
-
-import { addFeedback, addRating } from '../suppo../Header/apiservice'; // Import API functions
-
+// import { addFeedback, addRating } from '../suppo../Header/apiservice'; // Import API functions
 
 const FeedbackForm = () => {
   const [formData, setFormData] = useState({
@@ -31,14 +35,14 @@ const FeedbackForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     const userId = null; // or use a mock userId like 'someUserId'
     const ratedUserId = '507f191e810c19729de860ea'; // Replace with actual rated user's ID if available
-  
+
     try {
       // Submit the rating
       const response = await fetch('http://localhost:3000/addrating', {
@@ -47,19 +51,19 @@ const FeedbackForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          value: formData.rating,  // Rating value (1-5)
-          ratedUserId,             // ID of the user being rated
-          userId,                  // User's ID (even if null for now)
+          value: formData.rating, // Rating value (1-5)
+          ratedUserId, // ID of the user being rated
+          userId, // User's ID (even if null for now)
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to submit rating');
       }
-  
+
       const data = await response.json();
       console.log('Rating submitted successfully:', data);
-  
+
       // Submit the feedback as well
       await fetch('http://localhost:3000/add-feedback', {
         method: 'POST',
@@ -69,22 +73,19 @@ const FeedbackForm = () => {
         body: JSON.stringify({
           content: formData.feedback,
           category: formData.category,
-          status: 'pending',  // or set dynamically
+          status: 'pending', // or set dynamically
         }),
       });
-  
-      setIsSubmitted(true);  // Set to true once everything is successful
+
+      setIsSubmitted(true); // Set to true once everything is successful
     } catch (error) {
       console.error('Error submitting feedback:', error);
     } finally {
       setIsSubmitting(false);
-      setShowConfirmModal(true);  // Show confirmation modal on success
+      setShowConfirmModal(true); // Show confirmation modal on success
     }
   };
-  
-  
 
-  
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow bg-gray-100 py-12">
@@ -99,7 +100,8 @@ const FeedbackForm = () => {
                   Thank You for Your Feedback!
                 </h3>
                 <p className="text-gray-600 mb-8">
-                  Your input is valuable to us and will help improve our services.
+                  Your input is valuable to us and will help improve our
+                  services.
                 </p>
                 <Button
                   onClick={() => setIsSubmitted(false)}
@@ -151,7 +153,9 @@ const FeedbackForm = () => {
                       <SelectItem value="product">Product</SelectItem>
                       <SelectItem value="service">Service</SelectItem>
                       <SelectItem value="website">Website</SelectItem>
-                      <SelectItem value="customer-support">Customer Support</SelectItem>
+                      <SelectItem value="customer-support">
+                        Customer Support
+                      </SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>

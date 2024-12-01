@@ -36,6 +36,8 @@ import { AuthContext } from './Comps/context/AuthContext';
 import { AuthProvider } from './Comps/context/AuthContext';
 import AdminHeader from './Comps/AdminHeader';
 import ManagementPage from './Comps/AdminPanel/Management/ManagementPage';
+import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
+import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -232,6 +234,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ManagementPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/farmer',
+        element: (
+          <ProtectedRoute>
+            <FarmerDashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/farmer-Profile',
+        element: (
+          <ProtectedRoute>
+            <FarmerProfilePage />
           </ProtectedRoute>
         ),
       },
