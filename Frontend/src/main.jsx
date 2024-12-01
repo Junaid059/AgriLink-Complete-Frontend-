@@ -22,7 +22,7 @@ import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
 import WeatherDashboard from './Comps/weather/WeatherDashboard';
 import FarmerCalendar from './Comps/weather/FarmerCalender';
 import SubsidyRegulations from './Comps/ReguSubsidies/SubsidyRegulations';
-import Admin from './Comps/AdminPanel/Admin';
+// import Admin from './Comps/AdminPanel/Admin';
 import DashboardPage from './Comps/Gov-dashboard/DashboardPage';
 import CropDash from './Comps/Crops/CropDash';
 import Layout from './Comps/Crops/Layout';
@@ -38,6 +38,8 @@ import AdminHeader from './Comps/AdminHeader';
 import ManagementPage from './Comps/AdminPanel/Management/ManagementPage';
 import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
+import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
+import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -209,7 +211,9 @@ const router = createBrowserRouter([
         path: '/admin-panel',
         element: (
           <ProtectedRoute>
-            <Admin />
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
           </ProtectedRoute>
         ),
       },
