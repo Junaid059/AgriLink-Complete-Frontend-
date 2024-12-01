@@ -1,28 +1,27 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  RouterProvider,
   createBrowserRouter,
   Navigate,
+  RouterProvider,
 } from 'react-router-dom';
-import './index.css';
-import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
-import Market from './Comps/marketplace/Market.jsx';
-import Product from './Comps/marketplace/Product.jsx';
-import { CartProvider } from '/src/Comps/context/CartContext.jsx'; // Default import
-import Service from './Comps/service/service';
-import Tools from './Comps/service/tools';
+import Admin from './Comps/AdminPanel/Admin';
+import DashboardPage from './Comps/Gov-dashboard/DashboardPage';
+import Home from './Comps/Home.jsx';
+import SubsidyRegulations from './Comps/ReguSubsidies/SubsidyRegulations';
 import Chat from './Comps/collaboration/Chat';
 import Blog from './Comps/collaboration/blog';
+import Market from './Comps/marketplace/Market.jsx';
+import Product from './Comps/marketplace/Product.jsx';
+import Service from './Comps/service/service';
+import Tools from './Comps/service/tools';
+import AdminFeedbackTracking from './Comps/supportAndFeedBack/AdminFeedackTracking';
 import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
-import WeatherDashboard from './Comps/weather/WeatherDashboard';
 import FarmerCalendar from './Comps/weather/FarmerCalender';
-import SubsidyRegulations from './Comps/ReguSubsidies/SubsidyRegulations';
-import Admin from './Comps/AdminPanel/Admin';
-import RegulationManagement from './Comps/Gov-dashboard/RegulationManagement';
-import SubsidyManagement from './Comps/Gov-dashboard/SubsidyManagement';
-import DashboardPage from './Comps/Gov-dashboard/DashboardPage';
+import WeatherDashboard from './Comps/weather/WeatherDashboard';
+import './index.css';
+import { CartProvider } from '/src/Comps/context/CartContext.jsx'; // Default import
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -126,6 +125,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <DashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/feedback-tracking',
+    element: (
+      <ProtectedRoute>
+        <AdminFeedbackTracking />
       </ProtectedRoute>
     ),
   },
