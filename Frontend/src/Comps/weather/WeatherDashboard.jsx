@@ -9,11 +9,57 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
+import WeatherGraph from './WeatherGraph';
 import { LineChart } from 'lucide-react';
 import Header from '../UserHeader';
 import Footer from '../Footer';
 
 function WeatherDashboard() {
+  const [weatherData, setWeatherData] = useState(null);
+  const [hourlyData, setHourlyData] = useState([]);
+
+  useEffect(() => {
+    // Fetch Hourly Data
+    fetch('http://localhost:3001/forecast/hourly?q=33.626057,73.071442')
+      .then(response => response.json())
+      .then(data => {
+        setHourlyData(data.hourly);
+        setCurrentWeather(data.current);
+      })
+      .catch(error => console.error('Error fetching weather data:', error));
+  }, []);
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      try {
+        const response = await fetch(
+          'http://localhost:3001/weather/current?lat=33.5651091&lon=73.016914'
+        );
+        const result = await response.json();
+        setWeatherData(result.data);
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    };
+
+    fetchWeatherData();
+  }, []);
+
+  const chartData = {
+    labels: hourlyData?.map(item => 
+      new Date(item.time_epoch * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    ) || [],
+    datasets: [
+      {
+        label: 'Temperature (°C)',
+        data: hourlyData?.map(item => item.temp_c) || [],
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8">
@@ -35,16 +81,25 @@ function WeatherDashboard() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Weather Graph */}
+         <div className="grid md:grid-cols-2 gap-8">
+          {/* Weather Graph with Info */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="aspect-[2/1] bg-gray-100 rounded-md mb-4">
-              {/* Graph placeholder */}
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                Weather Graph
-              </div>
+            <h2 className="text-xl font-semibold mb-4">Weather Graph</h2>
+            <WeatherGraph data={weatherData} />
+            <div className="mt-4 space-y-2">
+              {weatherData && (
+                <div className="current-weather">
+                  <h3>Current Weather in {weatherData.location.name}</h3>
+                  <p>Condition: {weatherData.current.condition.text}</p>
+                  <p>Temperature: {weatherData.current.temp_c}°C</p>
+                  <p>Wind: {weatherData.current.wind_kph} km/h</p>
+                  <p>Humidity: {weatherData.current.humidity}%</p>
+                  <p>Visibility: {weatherData.current.vis_km} km</p>
+                </div>
+              )}
             </div>
           </div>
+
 
           {/* Controls */}
           <div className="space-y-6">
