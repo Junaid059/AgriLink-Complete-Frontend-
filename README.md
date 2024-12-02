@@ -45,14 +45,22 @@ This will install the following:
 - **TailwindCSS** - A utility-first CSS framework for styling.
 - **ShadCN UI** - A set of customizable UI components.
 
-### 4. Explore the Folder Structure
+
+### 4. Now cd src folder 
+
+```bash
+run: npm run dev
+```
+now the frontend is running on localhost:5173
+
+### 5. Explore the Folder Structure
 
 After installing the dependencies, you can explore the following structure:
 
 - **src/components** : This folder contains the ShadCN UI components.
 - **src/comps** : This folder contains various microservice-specific components. Inside this folder, you will find subfolders named after each microservice.
 
-### 5. Modify Your Microservice Components
+### 6. Modify Your Microservice Components
 
 To modify components related to your microservice:
 
@@ -61,11 +69,11 @@ To modify components related to your microservice:
 - **Open the folder** , and you'll find several components for your service.
 - **Edit the components**  as needed for your microservice. You can add new components, update existing ones, or make other changes to fit your requirements.
 
-## Branching and Collaboration
+## 7. Branching and Collaboration
 
 This repository uses a branching model for group collaboration. There are 15 branches, each named after a specific group (e.g., group1, group2, etc.).
 
-### 6. Switch to Your Group Branch
+### Switch to Your Group Branch
 
 Switch to your assigned group branch:
 
@@ -76,7 +84,7 @@ git checkout group<number>
 
 Replace <number> with your group number.
 
-### Making Changes
+### 8. Making Changes
 
 - **Make your changes** in the corresponding microservice folder or any relevant files.
 - **Stage and commit**  your changes:
@@ -91,7 +99,7 @@ git commit -m "Your descriptive commit message"
 git push origin group<number>
 ```
 
-### Creating a Pull Request
+### 9. Creating a Pull Request
 
 Once changes are pushed, create a Pull Request (PR) to merge your branch into the main branch:
 
