@@ -1,21 +1,14 @@
-import Navbar from './Navbar';
-import Sidebar from './SideBar';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
 
-function AdminLayout({ children }) {
+function AdminLayout() {
   return (
-    <html lang="en">
-      <body>
-        <div className="flex h-screen bg-gray-100">
-          <Sidebar />
-          <div className="flex flex-col flex-1 overflow-hidden">
-            <Navbar />
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-              <div className="container mx-auto px-6 py-8">{children}</div>
-            </main>
-          </div>
-        </div>
-      </body>
-    </html>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-4">
+        <Outlet /> {/* This renders the child route's element */}
+      </div>
+    </div>
   );
 }
 

@@ -40,6 +40,10 @@ import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
 import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
+import ChartsPage from './Comps/AdminPanel/AdminDashboard/ChartsPage';
+import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
+import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
+import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -208,16 +212,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/admin-panel',
-        element: (
-          <ProtectedRoute>
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: '/supply-chain',
         element: (
           <ProtectedRoute>
@@ -225,14 +219,16 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: '/gov-dashboard',
-        element: (
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        ),
-      },
+      ,
+      ,
+      // {
+      //   path: '/gov-dashboard',
+      //   element: (
+      //     <ProtectedRoute>
+      //       <DashboardPage />
+      //     </ProtectedRoute>
+      //   ),
+      // }
       {
         path: '/Management',
         element: (
@@ -257,6 +253,19 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+    ],
+  },
+  {
+    path: '/admin-panel',
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: 'home', element: <AdminDashboard /> },
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'charts', element: <ChartsPage /> },
+      { path: 'gov-dashboard', element: <DashboardPage /> },
+      { path: 'table', element: <TablePage /> },
+      { path: 'form', element: <FormPage /> },
     ],
   },
 ]);
