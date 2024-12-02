@@ -20,17 +20,19 @@ function WeatherDashboard() {
   const [hourlyData, setHourlyData] = useState([]);
 
   useEffect(() => {
-    // Fetch Hourly Data
+  //hourly
     fetch('http://localhost:3001/forecast/hourly?q=33.626057,73.071442')
       .then(response => response.json())
       .then(data => {
-        setHourlyData(data.hourly);
-        setCurrentWeather(data.current);
+      
+        setHourlyData(data || []); 
+        console.log('Hourly Datas:', hourlyData.data);
       })
       .catch(error => console.error('Error fetching weather data:', error));
   }, []);
 
   useEffect(() => {
+    //current
     const fetchWeatherData = async () => {
       try {
         const response = await fetch(
@@ -46,19 +48,6 @@ function WeatherDashboard() {
     fetchWeatherData();
   }, []);
 
-  const chartData = {
-    labels: hourlyData?.map(item => 
-      new Date(item.time_epoch * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    ) || [],
-    datasets: [
-      {
-        label: 'Temperature (°C)',
-        data: hourlyData?.map(item => item.temp_c) || [],
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      },
-    ],
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -83,21 +72,43 @@ function WeatherDashboard() {
 
          <div className="grid md:grid-cols-2 gap-8">
           {/* Weather Graph with Info */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
             <h2 className="text-xl font-semibold mb-4">Weather Graph</h2>
-            <WeatherGraph data={weatherData} />
-            <div className="mt-4 space-y-2">
+            <div className="w-full max-w-2xl">
+                <WeatherGraph data={hourlyData.data} />
+              </div>
+            <div className="mt-4 space-y-4">
               {weatherData && (
-                <div className="current-weather">
-                  <h3>Current Weather in {weatherData.location.name}</h3>
-                  <p>Condition: {weatherData.current.condition.text}</p>
-                  <p>Temperature: {weatherData.current.temp_c}°C</p>
-                  <p>Wind: {weatherData.current.wind_kph} km/h</p>
-                  <p>Humidity: {weatherData.current.humidity}%</p>
-                  <p>Visibility: {weatherData.current.vis_km} km</p>
+                <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 max-w-lg mx-auto">
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                    Current Weather in <span className="text-black-600">{weatherData.location.name}</span>
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Condition:</span>
+                      <span className="text-gray-800 font-medium">{weatherData.current.condition.text}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Temperature:</span>
+                      <span className="text-gray-800 font-medium">{weatherData.current.temp_c}°C</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Wind:</span>
+                      <span className="text-gray-800 font-medium">{weatherData.current.wind_kph} km/h</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Humidity:</span>
+                      <span className="text-gray-800 font-medium">{weatherData.current.humidity}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Visibility:</span>
+                      <span className="text-gray-800 font-medium">{weatherData.current.vis_km} km</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
+
           </div>
 
 

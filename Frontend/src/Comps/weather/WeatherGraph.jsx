@@ -7,85 +7,81 @@ import {
   LinearScale,
   PointElement,
   Tooltip,
-  Legend,
 } from 'chart.js';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip);
 
-function WeatherGraph({ weatherData }) {
-  const locationName = weatherData?.location?.name || 'Unknown';
-  const temperature = weatherData?.current?.temp_c || 0;
-  const humidity = weatherData?.current?.humidity || 0;
-  const windSpeed = weatherData?.current?.wind_kph || 0;
-  const localTime = weatherData?.location?.localtime || '';
+function WeatherGraph({ data }) {
+    console.log("Weather Data:", data); 
 
-  
-  const chartData = {
-    labels: ['Temperature (°C)', 'Humidity (%)', 'Wind Speed (kph)'],
-    datasets: [
-      {
-        label: `Weather Stats for ${locationName}`,
-        data: [temperature, humidity, windSpeed],
-        backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
+ 
+    if (!data || !data.forecast || !Array.isArray(data.forecast.forecastday) || data.forecast.forecastday.length === 0) {
+        return <div>Error: Weather data not available</div>;
+    }
+
+    //Extracting hourly data from the forecastday array
+    const hourlyData = data.forecast.forecastday[0].hour;
+
+    
+    const labels = hourlyData.map((entry) => entry.time.split(" ")[1]); 
+    const temperatures = hourlyData.map((entry) => entry.temp_c);
+
+    const chartData = {
+        labels,
+        datasets: [
+            {
+                label: 'Temperature (°C)',
+                data: temperatures,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                tension: 0.4,
+            },
         ],
-        borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(153, 102, 255, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+    };
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const label = context.dataset.label || '';
-            const value = context.raw;
-            const unit = context.label === 'Temperature (°C)' ? '°C' : context.label === 'Wind Speed (kph)' ? 'kph' : '%';
-            return `${label}: ${value} ${unit}`;
-          },
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    title: (tooltipItems) => `Time: ${tooltipItems[0].label}`,
+                    label: (tooltipItem) => {
+                        const entry = hourlyData[tooltipItem.dataIndex];
+                        return [
+                            `Temperature: ${tooltipItem.raw}°C`,
+                            `Humidity: ${entry.humidity}%`, 
+                            `Wind Speed: ${entry.wind_kph} km/h`, 
+                        ];
+                    },
+                },
+            },
         },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Metrics',
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time of Day',
+                },
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Temperature (°C)',
+                },
+            },
         },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Values',
-        },
-      },
-    },
-  };
+    };
 
-  return (
-    <div className="w-full h-64">
-      <Line data={chartData} options={options} />
-      <div className="text-center mt-4">
-        <p className="text-sm text-gray-600">
-          Data last updated: {localTime}
-        </p>
-      </div>
-    </div>
-  );
+    return (
+        <div className="w-full h-64">
+            <Line data={chartData} options={options} />
+        </div>
+    );
 }
 
 export default WeatherGraph;
