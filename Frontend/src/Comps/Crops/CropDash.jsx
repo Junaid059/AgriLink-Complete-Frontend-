@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DiagnosisForm from './DiagnosisForm';
 import DiagnosisResult from './DiagnosisResult';
+import ChatRecommendation from './ChatRecomendation';
 
 function CropDash() {
   const [diagnosisResult, setDiagnosisResult] = useState(null);
@@ -25,13 +26,16 @@ function CropDash() {
   };
 
   return (
-    <>
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-green-700 mb-8">Crop Diagnosis</h1>
       <div className="grid gap-8 md:grid-cols-2">
-        <DiagnosisForm onSubmit={handleDiagnosisSubmit} />
-        {diagnosisResult && <DiagnosisResult diagnosis={diagnosisResult} />}
+        <div>
+          <DiagnosisForm onSubmit={handleDiagnosisSubmit} />
+          {diagnosisResult && <DiagnosisResult diagnosis={diagnosisResult} />}
+        </div>
+        <ChatRecommendation />
       </div>
-    </>
+    </div>
   );
 }
 
