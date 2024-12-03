@@ -7,6 +7,8 @@ import {
   List,
   UserCircle,
   Church,
+  LayoutGrid,
+  Container,
 } from 'lucide-react';
 
 function Sidebar() {
@@ -68,6 +70,35 @@ function Sidebar() {
         >
           <Button variant="ghost" className="w-full justify-start">
             <Church className="mr-2 h-4 w-4" /> Gov
+          </Button>
+        </NavLink>
+        <NavLink
+          to="/admin-panel/management"
+          className={({ isActive }) =>
+            `w-full block ${
+              isActive
+                ? 'bg-green-500 text-white'
+                : 'hover:bg-green-100 hover:text-green-500'
+            }`
+          }
+        >
+          <Button variant="ghost" className="w-full justify-start">
+            <LayoutGrid className="mr-2 h-4 w-4" /> Management
+          </Button>
+        </NavLink>
+        <NavLink
+          to="/admin-panel/supply-chain"
+          end
+          className={({ isActive }) =>
+            `w-full block ${
+              isActive
+                ? 'bg-green-500 text-white'
+                : 'hover:bg-green-100 hover:text-green-500'
+            }`
+          }
+        >
+          <Button variant="ghost" className="w-full justify-start">
+            <Container className="mr-2 h-4 w-4" /> Supply Chain
           </Button>
         </NavLink>
         <NavLink

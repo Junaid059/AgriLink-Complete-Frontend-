@@ -204,22 +204,22 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: '/supply-chain',
-        element: (
-          <ProtectedRoute requiredRole="user">
-            <Page />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/Management',
-        element: (
-          <ProtectedRoute requiredRole="user">
-            <ManagementPage />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: '/supply-chain',
+      //   element: (
+      //     <ProtectedRoute requiredRole="user">
+      //       <Page />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      // {
+      //   path: '/Management',
+      //   element: (
+      //     <ProtectedRoute requiredRole="user">
+      //       <ManagementPage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
       {
         path: '/farmer',
         element: (
@@ -251,6 +251,8 @@ const router = createBrowserRouter([
       { path: 'products', element: <ProductsPage /> },
       { path: 'charts', element: <ChartsPage /> },
       { path: 'gov-dashboard', element: <DashboardPage /> },
+      { path: 'management', element: <ManagementPage /> },
+      { path: 'supply-chain', element: <Page /> },
       { path: 'table', element: <TablePage /> },
       { path: 'form', element: <FormPage /> },
     ],
