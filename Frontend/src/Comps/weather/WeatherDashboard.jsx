@@ -14,10 +14,15 @@ import WeatherGraph from './WeatherGraph';
 import { LineChart } from 'lucide-react';
 import Header from '../UserHeader';
 import Footer from '../Footer';
+import WeatherHistoryTable from './WeatherTable'; 
 
 function WeatherDashboard() {
   const [weatherData, setWeatherData] = useState(null);
   const [hourlyData, setHourlyData] = useState([]);
+  const [historicalData, setHistoricalData] = useState([]);
+  const [forecastData, setForecastData] = useState([]);
+  const [view, setView] = useState('real-time');
+  const [expandedRow, setExpandedRow] = useState(null);
 
   useEffect(() => {
   //hourly
@@ -49,6 +54,45 @@ function WeatherDashboard() {
   }, []);
 
 
+  const fetchHistoricalData = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3001/history/historical-weather?lat=33.565109&lon=73.016914'
+      );
+      const result = await response.json();
+    
+      setHistoricalData(result.data || []);
+      console.log('heheh',historicalData)
+    } catch (error) {
+      console.error('Error fetching historical data:', error);
+    }
+  };
+
+  const fetchForecastData = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3001/forecast/3-day?q=33.626057, 73.071442'
+      );
+      const result = await response.json();
+    
+      setForecastData(result.data || []);
+      console.log('heheh',forecastData)
+    } catch (error) {
+      console.error('Error fetching forecast data:', error);
+    }
+  };
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+    if (newView === 'history') {
+      fetchHistoricalData();
+    }
+    if (newView === 'forecast') {
+      fetchForecastData();
+    }
+  };
+
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8">
@@ -58,27 +102,28 @@ function WeatherDashboard() {
             Weather Dashboard
           </h1>
           <div className="flex gap-4">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => handleViewChange('real-time')}>
               Real Time
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => handleViewChange('history')}>
               7 Days History
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => handleViewChange('forecast')}>
               3 Days Forecast
             </Button>
           </div>
         </div>
 
-         <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           {/* Weather Graph with Info */}
-          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
             <h2 className="text-xl font-semibold mb-4">Weather Graph</h2>
-            <div className="w-full max-w-2xl">
-                <WeatherGraph data={hourlyData.data} />
-              </div>
+            <div className="w-full max-w-4xl md:w-full lg:w-10/12 xl:w-3/4 mx-auto">
+              <WeatherGraph data={hourlyData.data} />
+            </div>
+
             <div className="mt-4 space-y-4">
-              {weatherData && (
+              {view === 'real-time' && weatherData && weatherData.current && (
                 <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 max-w-lg mx-auto">
                   <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                     Current Weather in <span className="text-black-600">{weatherData.location.name}</span>
@@ -107,10 +152,16 @@ function WeatherDashboard() {
                   </div>
                 </div>
               )}
+              {/* Historical Data Table */}
+              {view === 'history' && historicalData && (
+                <WeatherHistoryTable historicalData={historicalData} />
+              )}
+              {/* Forecast Data Table */}
+              {view === 'forecast' && forecastData && (
+                <WeatherHistoryTable historicalData={forecastData} />
+              )}
             </div>
-
           </div>
-
 
           {/* Controls */}
           <div className="space-y-6">
@@ -163,7 +214,7 @@ function WeatherDashboard() {
       </main>
       <Footer />
     </div>
-  );
+);
 }
 
 export default WeatherDashboard;
