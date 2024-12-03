@@ -20,43 +20,29 @@ const LoginSignup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Hardcoded credentials
     const adminCredentials = {
       email: 'admin@gmail.com',
       password: 'admin123',
-    };
-    const govCredentials = {
-      email: 'gov@gmail.com',
-      password: 'gov123',
     };
     const userCredentials = {
       email: 'user@gmail.com',
       password: 'user123',
     };
 
-    // Authentication logic
     if (
       email === adminCredentials.email &&
       password === adminCredentials.password
     ) {
-      setRole('admin'); // Update role in context
+      localStorage.setItem('role', 'admin');
       navigate('/admin-panel');
-    } else if (
-      email === govCredentials.email &&
-      password === govCredentials.password
-    ) {
-      setRole('gov'); // Update role for other user types if needed
-      navigate('/gov-dashboard');
     } else if (
       email === userCredentials.email &&
       password === userCredentials.password
     ) {
-      setRole('user');
+      localStorage.setItem('role', 'user');
       navigate('/');
-    } else if (email && password) {
-      alert('Invalid email or password. Please try again.');
     } else {
-      alert('Please enter both email and password.');
+      alert('Invalid email or password.');
     }
   };
 
