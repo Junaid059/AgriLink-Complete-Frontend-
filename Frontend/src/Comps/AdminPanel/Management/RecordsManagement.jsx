@@ -19,7 +19,7 @@ import {
 import { Trash2 } from 'lucide-react';
 
 function RecordsManagement() {
-  const [activeForm, setActiveForm] = useState('');
+  const [activeTab, setActiveTab] = useState('seed'); // Tracks the active tab
   const [seedRecords, setSeedRecords] = useState([]);
   const [pesticideRecords, setPesticideRecords] = useState([]);
   const [supplierRecords, setSupplierRecords] = useState([]);
@@ -48,8 +48,17 @@ function RecordsManagement() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleAddSeed = () => {
-    setSeedRecords([...seedRecords, formData]);
+  // Handle adding records based on the active tab
+  const handleAddRecord = () => {
+    if (activeTab === 'seed') {
+      setSeedRecords([...seedRecords, formData]);
+    } else if (activeTab === 'pesticide') {
+      setPesticideRecords([...pesticideRecords, formData]);
+    } else if (activeTab === 'supplier') {
+      setSupplierRecords([...supplierRecords, formData]);
+    }
+
+    // Clear form and close dialog
     setFormData({
       seedId: '',
       name: '',
@@ -72,63 +81,10 @@ function RecordsManagement() {
       contact_email: '',
       rating: '',
     });
-    setIsDialogOpen(false);  // Close the dialog after saving
+    setIsDialogOpen(false);
   };
 
-  const handleAddPesticide = () => {
-    setPesticideRecords([...pesticideRecords, formData]);
-    setFormData({
-      seedId: '',
-      name: '',
-      type: '',
-      description: '',
-      cropType: '',
-      quantity: '',
-      unit: '',
-      dateOfPurchase: '',
-      origin: '',
-      isCertified: false,
-      supplierId: '',
-      pesticideId: '',
-      expiryDate: '',
-      compliance: false,
-      usageInstructions: '',
-      supplier_id: '',
-      address: '',
-      contact_phone: '',
-      contact_email: '',
-      rating: '',
-    });
-    setIsDialogOpen(false);  // Close the dialog after saving
-  };
-
-  const handleAddSupplier = () => {
-    setSupplierRecords([...supplierRecords, formData]);
-    setFormData({
-      seedId: '',
-      name: '',
-      type: '',
-      description: '',
-      cropType: '',
-      quantity: '',
-      unit: '',
-      dateOfPurchase: '',
-      origin: '',
-      isCertified: false,
-      supplierId: '',
-      pesticideId: '',
-      expiryDate: '',
-      compliance: false,
-      usageInstructions: '',
-      supplier_id: '',
-      address: '',
-      contact_phone: '',
-      contact_email: '',
-      rating: '',
-    });
-    setIsDialogOpen(false);  // Close the dialog after saving
-  };
-
+  // Handle deleting records
   const handleDeleteRecord = (index, type) => {
     if (type === 'seed') {
       const updatedRecords = [...seedRecords];
@@ -147,48 +103,133 @@ function RecordsManagement() {
 
   return (
     <div className="space-y-8 p-4">
-      <div className="flex justify-between items-center">
-        <div className="flex space-x-4">
+      {/* Tab Navigation */}
+      <div className="flex space-x-4">
+        <Button
+          className={`${activeTab === 'seed' ? 'bg-green-600' : 'bg-gray-200'
+            } text-white hover:bg-green-700`}
+          onClick={() => setActiveTab('seed')}
+        >
+          Seeds
+        </Button>
+        <Button
+          className={`${activeTab === 'pesticide' ? 'bg-blue-600' : 'bg-gray-200'
+            } text-white hover:bg-blue-700`}
+          onClick={() => setActiveTab('pesticide')}
+        >
+          Pesticides
+        </Button>
+        <Button
+          className={`${activeTab === 'supplier' ? 'bg-yellow-600' : 'bg-gray-200'
+            } text-white hover:bg-yellow-700`}
+          onClick={() => setActiveTab('supplier')}
+        >
+          Suppliers
+        </Button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="mt-6">
+        <div className="flex justify-between items-center mb-4">
           <Button
-            onClick={() => {
-              setActiveForm('seed');
-              setIsDialogOpen(true);
-            }}
+            onClick={() => setIsDialogOpen(true)}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
-            Add Seed
+            Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
           </Button>
-          <Button
-            onClick={() => {
-              setActiveForm('pesticide');
-              setIsDialogOpen(true);
-            }}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Add Pesticide
-          </Button>
-          <Button
-            onClick={() => {
-              setActiveForm('supplier');
-              setIsDialogOpen(true);
-            }}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white"
-          >
-            Add Supplier
-          </Button>
+        </div>
+
+        {/* Table for each type */}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {
+                activeTab === 'supplier' ? (
+                  supplierRecords.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{record.supplierId}</TableCell>
+                      <TableCell>{record.name}</TableCell>
+                      <TableCell>{record.contact_phone}</TableCell>
+                      <TableCell>{record.contact_email}</TableCell>
+                      <TableCell>{record.rating}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDeleteRecord(index, activeTab)}
+                          className="text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : activeTab === 'pesticide' ? (
+                  pesticideRecords.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{record.name}</TableCell>
+                      <TableCell>{record.type}</TableCell>
+                      <TableCell>{record.quantity}</TableCell>
+                      <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDeleteRecord(index, activeTab)}
+                          className="text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  seedRecords.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{record.name}</TableCell>
+                      <TableCell>{record.type}</TableCell>
+                      <TableCell>{record.quantity}</TableCell>
+                      <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDeleteRecord(index, activeTab)}
+                          className="text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )
+              }
+            </TableBody>
+
+          </Table>
         </div>
       </div>
 
+      {/* Dialog for adding records */}
       {isDialogOpen && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                Add New {activeForm.charAt(0).toUpperCase() + activeForm.slice(1)}
+                Add New {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              {activeForm === 'seed' && (
+              {activeTab === 'seed' && (
                 <>
                   <Input
                     placeholder="Seed ID"
@@ -247,7 +288,7 @@ function RecordsManagement() {
                 </>
               )}
 
-              {activeForm === 'pesticide' && (
+              {activeTab === 'pesticide' && (
                 <>
                   <Input
                     placeholder="Pesticide ID"
@@ -262,15 +303,9 @@ function RecordsManagement() {
                     className="border p-2 rounded"
                   />
                   <Input
-                    placeholder="Type"
+                    placeholder="Type (Herbicide/Insecticide)"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="border p-2 rounded"
-                  />
-                  <Input
-                    placeholder="Description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="border p-2 rounded"
                   />
                   <Input
@@ -309,10 +344,16 @@ function RecordsManagement() {
                     onChange={(e) => setFormData({ ...formData, usageInstructions: e.target.value })}
                     className="border p-2 rounded"
                   />
+                  <Input
+                    placeholder="Supplier ID"
+                    value={formData.supplierId}
+                    onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
+                    className="border p-2 rounded"
+                  />
                 </>
               )}
 
-              {activeForm === 'supplier' && (
+              {activeTab === 'supplier' && (
                 <>
                   <Input
                     placeholder="Supplier ID"
@@ -363,11 +404,7 @@ function RecordsManagement() {
               </Button>
               <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => {
-                  if (activeForm === 'seed') handleAddSeed();
-                  if (activeForm === 'pesticide') handleAddPesticide();
-                  if (activeForm === 'supplier') handleAddSupplier();
-                }}
+                onClick={handleAddRecord}
               >
                 Save
               </Button>
