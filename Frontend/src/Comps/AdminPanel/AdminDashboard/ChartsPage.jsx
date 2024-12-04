@@ -31,7 +31,7 @@ const lineData = [
   { name: 'Jul', uv: 3490, pv: 4300, amt: 2100 },
 ];
 
-export default function ChartsPage() {
+function ChartsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-green-600">Charts</h1>
@@ -98,3 +98,5 @@ export default function ChartsPage() {
     </div>
   );
 }
+
+export default ChartsPage;

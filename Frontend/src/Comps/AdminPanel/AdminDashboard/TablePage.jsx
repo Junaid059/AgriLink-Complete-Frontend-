@@ -44,7 +44,7 @@ const data = [
   { id: 5, name: 'Product E', category: 'Clothing', price: 79.99, stock: 75 },
 ];
 
-export default function TablePage() {
+function TablePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(3);
   const [sortColumn, setSortColumn] = useState('name');
@@ -195,3 +195,5 @@ export default function TablePage() {
     </div>
   );
 }
+
+export default TablePage;

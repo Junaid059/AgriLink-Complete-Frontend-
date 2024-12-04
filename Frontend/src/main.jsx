@@ -32,35 +32,32 @@ import ProfilePage from './Comps/Crops/ProfilePage';
 import LoanPage from './Comps/loan/LoanPage';
 import ExpertForum from './Comps/collaboration/ExpertForum';
 import Page from './Comps/AdminPanel/SupplyChain/Page';
-import { AuthContext } from './Comps/context/AuthContext';
-import { AuthProvider } from './Comps/context/AuthContext';
-import AdminHeader from './Comps/AdminHeader';
+
 import ManagementPage from './Comps/AdminPanel/Management/ManagementPage';
 import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
 import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
+import ChartsPage from './Comps/AdminPanel/AdminDashboard/ChartsPage';
+import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
+import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
+import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
-function ProtectedRoute({ children }) {
-  const isAuthenticated = true; // Replace with actual authentication check
-  return isAuthenticated ? children : <Navigate to="/signup" />;
+function ProtectedRoute({ children, requiredRole }) {
+  const role = localStorage.getItem('role'); // Get role from localStorage
+
+  if (!role) {
+    return <Navigate to="/signup" />;
+  }
+
+  return role === requiredRole ? children : <Navigate to="/" />;
 }
 
-// function AdminProtectedRoute({ children }) {
-//   const { role } = useContext(AuthContext); // Context-based role check
-//   console.log('Current role:', role); // Log role to debug
-//   return role === 'admin' ? children : <Navigate to="/admin-panel" />;
-// }
-
 function AppLayout() {
-  // const { role } = useContext(AuthContext);
   return (
     <>
-      {/* {role === 'admin' ? <AdminHeader /> : <UserHeader />} */}
       <UserHeader />
-      {/* <AdminHeader/> */}
       <Outlet />
-      {/* <Chat/> */}
     </>
   );
 }
@@ -74,7 +71,7 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Home />
           </ProtectedRoute>
         ),
@@ -82,7 +79,7 @@ const router = createBrowserRouter([
       {
         path: '/marketplace',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Market />
           </ProtectedRoute>
         ),
@@ -90,7 +87,7 @@ const router = createBrowserRouter([
       {
         path: '/marketplace/product/:id',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Product />
           </ProtectedRoute>
         ),
@@ -98,7 +95,7 @@ const router = createBrowserRouter([
       {
         path: '/services',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Service />
           </ProtectedRoute>
         ),
@@ -106,7 +103,7 @@ const router = createBrowserRouter([
       {
         path: '/service/tools/:id',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Tools />
           </ProtectedRoute>
         ),
@@ -114,7 +111,7 @@ const router = createBrowserRouter([
       {
         path: '/blogs',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Blog />
           </ProtectedRoute>
         ),
@@ -122,7 +119,7 @@ const router = createBrowserRouter([
       {
         path: '/weather',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <WeatherDashboard />
           </ProtectedRoute>
         ),
@@ -130,7 +127,7 @@ const router = createBrowserRouter([
       {
         path: '/feedback',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <FeedbackForm />
           </ProtectedRoute>
         ),
@@ -138,7 +135,7 @@ const router = createBrowserRouter([
       {
         path: '/farmerCalendar',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <FarmerCalendar />
           </ProtectedRoute>
         ),
@@ -146,7 +143,7 @@ const router = createBrowserRouter([
       {
         path: '/subsidyregulations',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <SubsidyRegulations />
           </ProtectedRoute>
         ),
@@ -154,7 +151,7 @@ const router = createBrowserRouter([
       {
         path: '/crop',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Layout>
               <CropDash />
             </Layout>
@@ -164,7 +161,7 @@ const router = createBrowserRouter([
       {
         path: '/contribute',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Layout>
               <ContributePage />
             </Layout>
@@ -174,7 +171,7 @@ const router = createBrowserRouter([
       {
         path: '/dataset',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Layout>
               <DatasetPage />
             </Layout>
@@ -184,7 +181,7 @@ const router = createBrowserRouter([
       {
         path: '/profile',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <Layout>
               <ProfilePage />
             </Layout>
@@ -194,7 +191,7 @@ const router = createBrowserRouter([
       {
         path: '/loan',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <LoanPage />
           </ProtectedRoute>
         ),
@@ -202,49 +199,31 @@ const router = createBrowserRouter([
       {
         path: '/expert-forum',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <ExpertForum />
           </ProtectedRoute>
         ),
       },
-      {
-        path: '/admin-panel',
-        element: (
-          <ProtectedRoute>
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/supply-chain',
-        element: (
-          <ProtectedRoute>
-            <Page />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/gov-dashboard',
-        element: (
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/Management',
-        element: (
-          <ProtectedRoute>
-            <ManagementPage />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: '/supply-chain',
+      //   element: (
+      //     <ProtectedRoute requiredRole="user">
+      //       <Page />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      // {
+      //   path: '/Management',
+      //   element: (
+      //     <ProtectedRoute requiredRole="user">
+      //       <ManagementPage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
       {
         path: '/farmer',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <FarmerDashboardPage />
           </ProtectedRoute>
         ),
@@ -252,11 +231,30 @@ const router = createBrowserRouter([
       {
         path: '/farmer-Profile',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="user">
             <FarmerProfilePage />
           </ProtectedRoute>
         ),
       },
+    ],
+  },
+  {
+    path: '/admin-panel',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: 'home', element: <AdminDashboard /> },
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'charts', element: <ChartsPage /> },
+      { path: 'gov-dashboard', element: <DashboardPage /> },
+      { path: 'management', element: <ManagementPage /> },
+      { path: 'supply-chain', element: <Page /> },
+      { path: 'table', element: <TablePage /> },
+      { path: 'form', element: <FormPage /> },
     ],
   },
 ]);
