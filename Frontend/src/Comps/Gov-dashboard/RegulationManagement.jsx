@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,38 +24,125 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const regulations = [
-  {
-    id: 1,
-    title: 'Pesticide Regulation 1',
-    description: 'Regulation for pesticide use in agriculture.',
-    createdDate: '2023-01-01',
-    updatedDate: '2023-01-05',
-    effectiveDate: '2023-02-01',
-    category: 'Pesticide',
-  },
-  {
-    id: 2,
-    title: 'Land Use Regulation 1',
-    description: 'Regulation for land use in agricultural zones.',
-    createdDate: '2023-02-01',
-    updatedDate: '2023-02-10',
-    effectiveDate: '2023-03-01',
-    category: 'Land Use',
-  },
-];
-
 function RegulationManagement() {
+  const [regulations, setRegulations] = useState([]);
   const [open, setOpen] = useState(false);
+  const [editRegulationId, setEditRegulationId] = useState(null); // Track the ID for edit
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    createdDate: '',
+    updatedDate: '',
+    effectiveDate: '',
+    category: '',
+  });
+
+  const baseURL = 'https://database-microservice-agrilink.onrender.com/regulations';
+
+  // Fetch regulations on component mount
+  useEffect(() => {
+    fetchRegulations();
+  }, []);
+
+  const fetchRegulations = async () => {
+    try {
+      const response = await fetch(baseURL);
+      const data = await response.json();
+      setRegulations(data);
+    } catch (error) {
+      console.error('Error fetching regulations:', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleCategoryChange = (value) => {
+    setFormData({ ...formData, category: value });
+  };
+
+  const handleSaveRegulation = async (e) => {
+    e.preventDefault();
+    try {
+      const method = editRegulationId ? 'PUT' : 'POST';
+      const url = editRegulationId ? `${baseURL}/${editRegulationId}` : baseURL;
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save regulation');
+      }
+
+      // Reset state and refetch data
+      setFormData({
+        title: '',
+        description: '',
+        createdDate: '',
+        updatedDate: '',
+        effectiveDate: '',
+        category: '',
+      });
+      setEditRegulationId(null);
+      setOpen(false);
+      fetchRegulations();
+    } catch (error) {
+      console.error('Error saving regulation:', error);
+    }
+  };
+
+  const handleDeleteRegulation = async (id) => {
+    try {
+      const response = await fetch(`${baseURL}/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete regulation');
+      }
+
+      fetchRegulations();
+    } catch (error) {
+      console.error('Error deleting regulation:', error);
+    }
+  };
+
+  const handleEdit = (regulation) => {
+    setEditRegulationId(regulation._id);
+    setFormData({
+      title: regulation.title,
+      description: regulation.description,
+      createdDate: regulation.createdDate,
+      updatedDate: regulation.updatedDate,
+      effectiveDate: regulation.effectiveDate,
+      category: regulation.category,
+    });
+    setOpen(true);
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Regulation Management
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Regulation Management</h2>
         <Button
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setEditRegulationId(null);
+            setFormData({
+              title: '',
+              description: '',
+              createdDate: '',
+              updatedDate: '',
+              effectiveDate: '',
+              category: '',
+            });
+            setOpen(true);
+          }}
           className="bg-green-500 hover:bg-green-600 text-white"
         >
           Add New Regulation
@@ -77,7 +164,7 @@ function RegulationManagement() {
           </TableHeader>
           <TableBody>
             {regulations.map((regulation) => (
-              <TableRow key={regulation.id}>
+              <TableRow key={regulation._id}>
                 <TableCell>{regulation.title}</TableCell>
                 <TableCell>{regulation.description}</TableCell>
                 <TableCell>{regulation.createdDate}</TableCell>
@@ -90,10 +177,15 @@ function RegulationManagement() {
                       variant="default"
                       size="sm"
                       className="bg-blue-500 hover:bg-blue-600 text-white"
+                      onClick={() => handleEdit(regulation)}
                     >
                       Edit
                     </Button>
-                    <Button variant="destructive" size="sm">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteRegulation(regulation._id)}
+                    >
                       Delete
                     </Button>
                   </div>
@@ -107,38 +199,62 @@ function RegulationManagement() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add Regulation</DialogTitle>
+            <DialogTitle>
+              {editRegulationId ? 'Edit Regulation' : 'Add Regulation'}
+            </DialogTitle>
           </DialogHeader>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSaveRegulation}>
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
-              <Input id="title" />
+              <Input id="title" value={formData.title} onChange={handleInputChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Input id="description" />
+              <Input
+                id="description"
+                value={formData.description}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="createdDate">Created Date</Label>
-              <Input id="createdDate" type="date" />
+              <Input
+                id="createdDate"
+                type="date"
+                value={formData.createdDate}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="updatedDate">Updated Date</Label>
-              <Input id="updatedDate" type="date" />
+              <Input
+                id="updatedDate"
+                type="date"
+                value={formData.updatedDate}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="effectiveDate">Effective Date</Label>
-              <Input id="effectiveDate" type="date" />
+              <Input
+                id="effectiveDate"
+                type="date"
+                value={formData.effectiveDate}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
-              <Select>
+              <Select
+                onValueChange={handleCategoryChange}
+                value={formData.category}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pesticide">Pesticide</SelectItem>
-                  <SelectItem value="landuse">Land Use</SelectItem>
+                  <SelectItem value="Pesticide">Pesticide</SelectItem>
+                  <SelectItem value="Land Use">Land Use</SelectItem>
                 </SelectContent>
               </Select>
             </div>
