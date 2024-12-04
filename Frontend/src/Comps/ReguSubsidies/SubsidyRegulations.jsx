@@ -1,11 +1,14 @@
 //SusidyRegulations.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useEffect } from 'react';
+import SearchSubsidies from './SearchSubsidies';
+import SearchRegulations from './SearchRegulations';
 import SearchSubsidies from './SearchSubsidies';
 import SearchRegulations from './SearchRegulations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+
 
 import {
   Select,
@@ -21,9 +24,9 @@ function SubsidyRegulations() {
   const [showFormIndex, setShowFormIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [cnicFile, setCnicFile] = useState(null);
-  const [landFile, setLandFile] = useState(null); 
-  const [showBankDetailsPopup, setShowBankDetailsPopup] = useState(false); 
+  const [cnicFile, setCnicFile] = useState(null); // State to hold CNIC file
+  const [landFile, setLandFile] = useState(null); // State to hold land ownership file
+  const [showBankDetailsPopup, setShowBankDetailsPopup] = useState(false); // Tracks the bank details modal state
   const [bankDetails, setBankDetails] = useState({
     accountNumber: '',
     bankName: '',
@@ -230,6 +233,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-gray-50">
       
+      
       <main className="container mx-auto py-8 px-4">
       <div className="flex justify-center space-x-4 mb-8">
           <Button
@@ -392,6 +396,41 @@ useEffect(() => {
             ))}
           </>
         )}
+                      {showFormIndex === index && (
+                        <Button
+                          onClick={() => {
+                            setShowFormIndex(showFormIndex === index ? null : index);
+                          }}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                          disabled={loading}
+                        >
+                          {loading ? 'Submitting...' : 'Submit Application'}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+
+          </>
+        ) : (
+          <>
+            <SearchRegulations regulations={regulations} onSearch={setFilteredRegulations} />
+            {filteredRegulations.map((regulation, index) => (
+              <Card key={index} className="p-6 mb-20 bg-gray-100">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">{regulation.title}</h2>
+                <p className="text-gray-600 mb-4">{expanded === index ? regulation.fullDescription : regulation.description}</p>
+                <div className="space-y-2 text-sm text-gray-500">
+                  <p className="text-lg">Effective Date: {regulation.effectiveDate}</p>
+                  <p className="text-lg">Category: {regulation.category}</p>
+                  <p className="text-lg">Type: {regulation.type}</p>
+                </div>
+              </Card>
+            ))}
+          </>
+        )}
 
         
      
@@ -443,6 +482,7 @@ useEffect(() => {
                   />
                 </div>
                 <Button
+                  onClick={handleSaveBankDetails}
                   onClick={handleSaveBankDetails}
                   className="w-full bg-green-600 hover:bg-green-700"
                 >
@@ -519,8 +559,79 @@ useEffect(() => {
 
 
 
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                onClick={() => setShowBankDetailsPopup(false)} // Close modal on click
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        )}
+
+        
+
+        <div className="flex justify-center items-center min-h-screen">
+          
+          {/* Subsidy Application Form Modal */}
+            {showFormIndex !== null && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                <div className="relative w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+                  <h3 className="text-lg font-semibold mb-4 text-center">Apply for Subsidy</h3>
+                  <form className="space-y-4">
+                    <Select>
+                      <SelectTrigger className="w-full">Select Subsidy Type</SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="organic_farming">Organic Farming</SelectItem>
+                        <SelectItem value="irrigation_system">Irrigation System</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <div>
+                      <label className="block mb-1 text-sm font-medium text-gray-700">
+                        Upload CNIC Copy
+                      </label>
+                      <Input
+                        type="file"
+                        className="w-full"
+                        onChange={handleCnicFileChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-sm font-medium text-gray-700">
+                        Upload Land Ownership Docs
+                      </label>
+                      <Input
+                        type="file"
+                        className="w-full"
+                        onChange={handleLandFileChange}
+                      />
+                    </div>
+                    <Button
+                      onClick={handleSubmitApplication}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      disabled={loading}
+                    >
+                      {loading ? 'Submitting...' : 'Submit Application'}
+                    </Button>
+                    {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+                  </form>
+                  <button
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                    onClick={() => setShowFormIndex(null)} // Close modal on click
+                    aria-label="Close"
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+            )}
+
+
+
         </div>
       </main>
+
 
       <Footer />
     </div>
