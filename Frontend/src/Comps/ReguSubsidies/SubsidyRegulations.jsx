@@ -4,8 +4,7 @@ import SearchRegulations from './SearchRegulations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import DatePicker from 'react-datepicker'; 
-import 'react-datepicker/dist/react-datepicker.css';
+
 import {
   Select,
   SelectTrigger,
