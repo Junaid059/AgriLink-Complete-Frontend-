@@ -9,32 +9,24 @@ const dummyFeedbacks = [
     content: 'The website is not mobile responsive',
     category: 'Website',
     userId: { _id: 'user1', name: 'John Doe' },
-    status: 'Pending',
-    createdAt: '2024-03-01T10:00:00Z',
   },
   {
     _id: '2',
     content: 'Customer support was very helpful',
     category: 'Customer Support',
     userId: { _id: 'user2', name: 'Jane Smith' },
-    status: 'Resolved',
-    createdAt: '2024-03-02T11:30:00Z',
   },
   {
     _id: '3',
     content: 'Product quality needs improvement',
     category: 'Product',
     userId: { _id: 'user3', name: 'Mike Johnson' },
-    status: 'In Progress',
-    createdAt: '2024-03-03T09:15:00Z',
   },
   {
     _id: '4',
     content: 'Delivery service was delayed',
     category: 'Service',
     userId: { _id: 'user4', name: 'Sarah Williams' },
-    status: 'Pending',
-    createdAt: '2024-03-04T14:20:00Z',
   },
 ];
 
@@ -136,9 +128,6 @@ const AdminFeedbackTracking = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       User
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -147,17 +136,11 @@ const AdminFeedbackTracking = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredFeedbacks.map((feedback) => (
                     <tr key={feedback._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(feedback.createdAt).toLocaleDateString()}
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {feedback.userId.name}
                       </td>
@@ -167,15 +150,6 @@ const AdminFeedbackTracking = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span className="px-2 py-1 text-xs rounded-full bg-gray-100">
                           {feedback.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
-                            feedback.status
-                          )}`}
-                        >
-                          {feedback.status}
                         </span>
                       </td>
                     </tr>

@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -13,12 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Mail, MapPin, Phone, Loader2 } from 'lucide-react';
-import StarRating from './StarRating';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import Footer from '../Footer';
+import Header from '../Header';
 import ChatWindow from './ChatWindow';
 import ConfirmModal from './ConfirmModal';
-import Header from '../Header';
-import Footer from '../Footer';
+import StarRating from './StarRating';
 
 const FeedbackForm = () => {
   const [formData, setFormData] = useState({
@@ -44,10 +43,35 @@ const FeedbackForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setShowConfirmModal(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:3000/add-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          feedback: formData.feedback,
+          category: formData.category,
+          rating: formData.rating,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback. Please try again later.');
+      }
+
+      const data = await response.json();
+      console.log('Feedback submitted successfully:', data);
+
+      // Show confirmation modal
+      setIsSubmitting(false);
+      setShowConfirmModal(true);
+    } catch (error) {
+      console.error('Error submitting feedback:', error.message);
+      alert('Error submitting feedback: ' + error.message); // You can customize the error display
+      setIsSubmitting(false);
+    }
   };
 
   const confirmSubmission = () => {
