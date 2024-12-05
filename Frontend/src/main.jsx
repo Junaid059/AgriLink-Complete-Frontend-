@@ -14,6 +14,8 @@ import ChatScreen from './Comps/Chat';
 import ChatScreen2 from './Comps/Chat2';
 import ChatList from './Comps/ChatList';
 
+import BlogManagement from './Comps/Blog';
+
 function ProtectedRoute({ children }) {
   // Replace this with actual authentication check
   const isAuthenticated = true; // Set to true if user is authenticated
@@ -71,6 +73,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <ChatList />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/blog',
+    element: (
+      <ProtectedRoute>
+        <BlogManagement />
       </ProtectedRoute>
     ),
   },
