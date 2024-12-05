@@ -52,18 +52,41 @@ function SubsidyRegulations() {
     }));
   };
 
-  const handleSaveBankDetails = () => {
+  const handleSaveBankDetails = async () => {
     if (!bankDetails.accountNumber || !bankDetails.bankName || !bankDetails.accountHolder) {
       alert('Please fill in all fields.');
       return;
     }
-
-    // Add logic to save bank details via API or update state
-    console.log('Bank Details:', bankDetails);
-    alert('Bank details updated successfully!');
-    setShowBankDetailsPopup(false); // Close the modal
+  
+    try {
+      setLoading(true); // Optional: Show a loading indicator
+  
+      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543210`, { // Replace `userId` with the actual user's ID
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bankDetails,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update bank details');
+      }
+  
+      const updatedProfile = await response.json();
+      console.log('Bank details updated:', updatedProfile);
+      alert('Bank details updated successfully!');
+      setShowBankDetailsPopup(false); // Close the modal
+    } catch (error) {
+      console.error('Error updating bank details:', error);
+      alert('Failed to update bank details. Please try again later.');
+    } finally {
+      setLoading(false); // Hide the loading indicator
+    }
   };
-
+  
   const applyFilters = () => {
     const { region, type } = filterOptions;
    
