@@ -10,6 +10,9 @@ import Home from './Comps/Home.jsx';
 import LoginSignup from './Auth/LoginSignup.jsx';
 import Market from './Comps/marketplace/Market.jsx';
 import Product from './Comps/marketplace/Product.jsx';
+import ChatScreen from './Comps/Chat';
+import ChatScreen2 from './Comps/Chat2';
+import ChatList from './Comps/ChatList';
 
 function ProtectedRoute({ children }) {
   // Replace this with actual authentication check
@@ -44,6 +47,30 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Product />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/chat',
+    element: (
+      <ProtectedRoute>
+        <ChatScreen />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/chat2',
+    element: (
+      <ProtectedRoute>
+        <ChatScreen2 />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/chats',
+    element: (
+      <ProtectedRoute>
+        <ChatList />
       </ProtectedRoute>
     ),
   },
