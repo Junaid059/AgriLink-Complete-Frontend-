@@ -22,42 +22,63 @@ function WeatherDashboard() {
   const [historicalData, setHistoricalData] = useState([]);
   const [forecastData, setForecastData] = useState([]);
   const [view, setView] = useState('real-time');
-  const [expandedRow, setExpandedRow] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
-  useEffect(() => {
-  //hourly
-    fetch('http://localhost:3001/forecast/hourly?q=33.626057,73.071442')
-      .then(response => response.json())
-      .then(data => {
-      
-        setHourlyData(data || []); 
-        console.log('Hourly Datas:', hourlyData.data);
-      })
-      .catch(error => console.error('Error fetching weather data:', error));
-  }, []);
-
-  useEffect(() => {
-    //current
-    const fetchWeatherData = async () => {
+   // Fetch farmer profile to get latitude and longitude
+   useEffect(() => {
+    const fetchFarmLocation = async () => {
       try {
         const response = await fetch(
-          'http://localhost:3001/weather/current?lat=33.5651091&lon=73.016914'
+          'https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543211'
         );
         const result = await response.json();
-        setWeatherData(result.data);
+        const { latitude, longitude } = result.farmDetails.farmLocation;
+        setLatitude(latitude);
+        setLongitude(longitude);
+        console.log('lat:', latitude, 'long:', longitude)
       } catch (error) {
-        console.error('Error fetching weather data:', error);
+        console.error('Error fetching farm location:', error);
       }
     };
 
-    fetchWeatherData();
+    fetchFarmLocation();
   }, []);
+
+  // useEffect(() => {
+  // //hourly
+  //   fetch(`http://localhost:3001/forecast/hourly?q=${latitude},${longitude}`)
+  //     .then(response => response.json())
+  //     .then(data => {
+      
+  //       setHourlyData(data || []); 
+  //       console.log('Hourly Datas:', hourlyData.data);
+  //     })
+  //     .catch(error => console.error('Error fetching weather data:', error));
+  // }, []);
+
+  // useEffect(() => {
+  //   //current
+  //   const fetchWeatherData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `http://localhost:3001/weather/current?q=${latitude},${longitude}`
+  //       );
+  //       const result = await response.json();
+  //       setWeatherData(result.data);
+  //     } catch (error) {
+  //       console.error('Error fetching weather data:', error);
+  //     }
+  //   };
+
+  //   fetchWeatherData();
+  // }, []);
 
 
   const fetchHistoricalData = async () => {
     try {
       const response = await fetch(
-        'http://localhost:3001/history/historical-weather?lat=33.565109&lon=73.016914'
+        `http://localhost:3001/history/historical-weather?lat=${latitude}&long=${longitude}`
       );
       const result = await response.json();
     
@@ -71,7 +92,7 @@ function WeatherDashboard() {
   const fetchForecastData = async () => {
     try {
       const response = await fetch(
-        'http://localhost:3001/forecast/3-day?q=33.626057, 73.071442'
+        `http://localhost:3001/forecast/3-day?q=${latitude},${longitude}`
       );
       const result = await response.json();
     
