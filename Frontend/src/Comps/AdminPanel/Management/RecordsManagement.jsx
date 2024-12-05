@@ -145,7 +145,7 @@ function RecordsManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>Te</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Actions</TableHead>
