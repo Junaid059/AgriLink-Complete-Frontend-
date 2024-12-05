@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import SearchSubsidies from './SearchSubsidies';
 import SearchRegulations from './SearchRegulations';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -63,6 +65,23 @@ function SubsidyRegulations() {
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const [applications, setApplications] = useState([]);
+  const [bookmarkedRegulations, setBookmarkedRegulations] = useState([]);
+
+
+  const handleBookmarkToggle = async (regulationId) => {
+    const farmerId = '63f5f4b5b02fda9876543210'; // You need to get the current user's farmer ID
+  
+    if (bookmarkedRegulations.includes(regulationId)) {
+      // Remove bookmark
+      setBookmarkedRegulations(bookmarkedRegulations.filter(id => id !== regulationId));
+      await removeBookmark(regulationId, farmerId); // Call backend to remove bookmark
+    } else {
+      // Add bookmark
+      setBookmarkedRegulations([...bookmarkedRegulations, regulationId]);
+      await addBookmark(regulationId, farmerId); // Call backend to add bookmark
+    }
+  };
+  
 
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -83,18 +102,41 @@ function SubsidyRegulations() {
     }));
   };
 
-  const handleSaveBankDetails = () => {
+  const handleSaveBankDetails = async () => {
     if (!bankDetails.accountNumber || !bankDetails.bankName || !bankDetails.accountHolder) {
       alert('Please fill in all fields.');
       return;
     }
-
-    
-    console.log('Bank Details:', bankDetails);
-    alert('Bank details updated successfully!');
-    setShowBankDetailsPopup(false);
+  
+    try {
+      setLoading(true); // Optional: Show a loading indicator
+  
+      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543210`, { // Replace `userId` with the actual user's ID
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bankDetails,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update bank details');
+      }
+  
+      const updatedProfile = await response.json();
+      console.log('Bank details updated:', updatedProfile);
+      alert('Bank details updated successfully!');
+      setShowBankDetailsPopup(false); // Close the modal
+    } catch (error) {
+      console.error('Error updating bank details:', error);
+      alert('Failed to update bank details. Please try again later.');
+    } finally {
+      setLoading(false); // Hide the loading indicator
+    }
   };
-
+  
   const applyFilters = () => {
     const { region, type } = filterOptions;
    
@@ -116,6 +158,58 @@ function SubsidyRegulations() {
   };
   
 
+
+  // Function to add a bookmark
+const addBookmark = async (regulationId, farmerId) => {
+  try {
+    const response = await fetch(`https://database-microservice-agrilink.onrender.com/regulations/${regulationId}/bookmarks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        farmerId, // Farmer's ID to be added as a bookmark
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add bookmark');
+    }
+
+    const updatedRegulation = await response.json();
+    // Handle the updated regulation object (you can update the state or UI accordingly)
+    console.log(updatedRegulation);
+  } catch (error) {
+    console.error('Error adding bookmark:', error);
+  }
+};
+
+// Function to remove a bookmark
+const removeBookmark = async (regulationId, farmerId) => {
+  try {
+    const response = await fetch(`https://database-microservice-agrilink.onrender.com/regulations/${regulationId}/bookmarks`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        farmerId, // Farmer's ID to be removed as a bookmark
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to remove bookmark');
+    }
+
+    const updatedRegulation = await response.json();
+    // Handle the updated regulation object (you can update the state or UI accordingly)
+    console.log(updatedRegulation);
+  } catch (error) {
+    console.error('Error removing bookmark:', error);
+  }
+};
+
+  
 
  // Event handlers for dropdowns 
 const handleCategoryChange = (value) => {
@@ -437,16 +531,28 @@ const handleSubmitApplication = async () => {
           <>
             <SearchRegulations regulations={regulations} onSearch={setFilteredRegulations} />
             {filteredRegulations.map((regulation, index) => (
-              <Card key={index} className="p-6 mb-20 bg-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{regulation.title}</h2>
-                <p className="text-gray-600 mb-4">{expanded === index ? regulation.fullDescription : regulation.description}</p>
-                <div className="space-y-2 text-sm text-gray-500">
-                  <p className="text-lg">Effective Date: {regulation.effectiveDate}</p>
-                  <p className="text-lg">Category: {regulation.category}</p>
-                  <p className="text-lg">Type: {regulation.type}</p>
-                </div>
-              </Card>
-            ))}
+             <Card key={index} className="p-6 mb-20 bg-gray-100">
+              <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">{regulation.title}</h2>
+               <button
+                onClick={() => handleBookmarkToggle(regulation._id)} // Trigger the bookmark toggle
+                className="text-gray-600"
+               >
+               {bookmarkedRegulations.includes(regulation._id) ? (
+               <FaBookmark className="text-yellow-500" /> // Filled bookmark icon for bookmarked regulations
+              ) : (
+               <FaRegBookmark className="text-gray-500" /> // Outline bookmark icon for non-bookmarked regulations
+              )}
+              </button>
+               </div>
+             <p className="text-gray-600 mb-4">{expanded === index ? regulation.fullDescription : regulation.description}</p>
+             <div className="space-y-2 text-sm text-gray-500">
+             <p className="text-lg">Effective Date: {regulation.effectiveDate}</p>
+             <p className="text-lg">Category: {regulation.category}</p>
+             <p className="text-lg">Type: {regulation.type}</p>
+              </div>
+            </Card>
+))}
           </>
         )}
 

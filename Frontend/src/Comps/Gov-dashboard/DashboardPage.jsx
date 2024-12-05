@@ -1,6 +1,7 @@
 // import { Button } from '@/components/ui/button';
 import RegulationManagement from './RegulationManagement';
-import SubsidyManagement from './SubsidyManagement';
+import SubsidyManagement from './Subsisdy';
+import SubsidyApp from './SubsidyAppManagement';
 
 function DashboardPage() {
   return (
@@ -11,7 +12,9 @@ function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <RegulationManagement />
-        <SubsidyManagement />
+        <SubsidyApp />
+        <SubsidyManagement/>
+
       </div>
     </div>
   );
