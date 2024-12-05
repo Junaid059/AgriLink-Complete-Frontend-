@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ const LoginSignup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [role, setRole] = useState('Farmer');
   const navigate = useNavigate();
 
   const handleToggle = () => {
@@ -15,36 +16,71 @@ const LoginSignup = () => {
     setEmail('');
     setPassword('');
     setFullName('');
+    setRole('Farmer');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const adminCredentials = {
-      email: 'admin@gmail.com',
-      password: 'admin123',
-    };
-    const userCredentials = {
-      email: 'user@gmail.com',
-      password: 'user123',
-    };
-
-    if (
-      email === adminCredentials.email &&
-      password === adminCredentials.password
-    ) {
-      localStorage.setItem('role', 'admin');
-      navigate('/admin-panel');
-    } else if (
-      email === userCredentials.email &&
-      password === userCredentials.password
-    ) {
-      localStorage.setItem('role', 'user');
-      navigate('/');
-    } else {
-      alert('Invalid email or password.');
+  
+    const endpoint = isLogin ? "http://localhost:3000/api/auth/login" : "http://localhost:3000/api/auth/register";
+    const payload = isLogin
+      ? { email, password }
+      : { email, password, fullName, role }; 
+  
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        if (isLogin) {
+          // Login success
+          localStorage.setItem("role", data.role); // Assuming backend returns user role
+          localStorage.setItem("accessToken", data.accessToken); // Save access token
+          navigate(data.role === "admin" ? "/admin-panel" : "/");
+        } else {
+          // Signup success
+          alert("Signup successful! Please login.");
+          setIsLogin(true); // Switch to login view
+        }
+      } else {
+        // Handle errors from the backend
+        alert(data.message || "An error occurred. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Unable to connect to the server. Please try again later.");
     }
   };
+   // UseEffect for fetching protected data
+  //  useEffect(() => {
+  //   const fetchProtectedData = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3000/api/auth/protectedRoute', {
+  //         method: 'GET',
+  //         credentials: 'include', // Ensure cookies are sent with the request
+  //       });
+  //       const data = await response.json();
+  //       if (response.ok) {
+  //         console.log("Protected data:", data);
+  //       } else {
+  //         alert(data.message || 'Unauthorized access.');
+  //       }
+  //     } catch (error) {
+  //       console.error("Error accessing protected route:", error);
+  //     }
+  //   };
+
+  //   fetchProtectedData();
+  // }, []); // Runs only once when the component mounts (can be customized as per need)
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background bg-hero-pattern bg-cover bg-center">
@@ -109,7 +145,24 @@ const LoginSignup = () => {
                 required
               />
             </div>
-
+            
+            {/* Dropdown for selecting role */}
+            {!isLogin && (
+            <div>
+              <label htmlFor="role">Role: </label>
+              <select
+                id="role"
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="farmer">Farmer</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+                {/* You can add more roles here if necessary */}
+              </select>
+            </div>
+            )}
             <Button
               type="submit"
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors"
