@@ -5,29 +5,74 @@ import { Button } from '@/components/ui/button';
 
 const LoginSignup = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState('Farmer');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+
   const navigate = useNavigate();
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
-    setEmail('');
+    setUsername('');
     setPassword('');
     setFullName('');
+    setEmail('');
     setRole('Farmer');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation
+    if (!username || !password) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    if (!isLogin) {
+      if (!firstName || !lastName || !phone || !address) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Password should be at least 6 characters.');
+        return;
+      }
+      if (phone.length < 10) {
+        alert('Invalid phone number');
+        return;
+      }
+    }
+
+    const user = {
+      username: username,
+      password: password,
+      role: role,
+      personalDetails: {
+        firstName,
+        lastName,
+        contactInfo: {
+          email: email,
+          phone,
+        },
+        address,
+      },
+    };
+
     const endpoint = isLogin
       ? 'http://localhost:3000/api/auth/login'
       : 'http://localhost:3000/api/auth/register';
-    const payload = isLogin
-      ? { email, password }
-      : { email, password, fullName, role };
+    const payload = isLogin ? { username, password } : user;
 
     try {
       const response = await fetch(endpoint, {
@@ -44,9 +89,12 @@ const LoginSignup = () => {
       if (response.ok) {
         if (isLogin) {
           // Login success
-          localStorage.setItem('role', data.role); // Assuming backend returns user role
+          // Assuming backend returns user role
+          localStorage.setItem('role', data.role);
           localStorage.setItem('accessToken', data.accessToken); // Save access token
+          localStorage.setItem('refreshToken', data.refreshToken);
           navigate(data.role === 'admin' ? '/admin-panel' : '/');
+          alert('Login successful');
         } else {
           // Signup success
           alert('Signup successful! Please login.');
@@ -61,27 +109,6 @@ const LoginSignup = () => {
       alert('Unable to connect to the server. Please try again later.');
     }
   };
-  // UseEffect for fetching protected data
-  //  useEffect(() => {
-  //   const fetchProtectedData = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:3000/api/auth/protectedRoute', {
-  //         method: 'GET',
-  //         credentials: 'include', // Ensure cookies are sent with the request
-  //       });
-  //       const data = await response.json();
-  //       if (response.ok) {
-  //         console.log("Protected data:", data);
-  //       } else {
-  //         alert(data.message || 'Unauthorized access.');
-  //       }
-  //     } catch (error) {
-  //       console.error("Error accessing protected route:", error);
-  //     }
-  //   };
-
-  //   fetchProtectedData();
-  // }, []); // Runs only once when the component mounts (can be customized as per need)
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background bg-hero-pattern bg-cover bg-center">
@@ -110,26 +137,76 @@ const LoginSignup = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {!isLogin && (
-              <div>
-                <label className="block text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-                  required
-                />
-              </div>
+              <>
+                <div>
+                  <label className="block text-gray-700">First Name</label>
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Last Name</label>
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Phone</label>
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Address</label>
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    placeholder="youremail@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
+                  />
+                </div>
+              </>
             )}
 
             <div>
-              <label className="block text-gray-700">Email</label>
+              <label className="block text-gray-700">Username</label>
               <input
-                type="email"
-                placeholder="yourname@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="your_username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
@@ -147,7 +224,20 @@ const LoginSignup = () => {
               />
             </div>
 
-            {/* Dropdown for selecting role */}
+            {!isLogin && (
+              <div>
+                <label className="block text-gray-700">Confirm Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full mt-2 px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                  required
+                />
+              </div>
+            )}
+
             {!isLogin && (
               <div>
                 <label htmlFor="role">Role: </label>
@@ -156,11 +246,14 @@ const LoginSignup = () => {
                   name="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
+                  className="w-full mt-2 px-4 py-3 border rounded-md"
                 >
-                  <option value="farmer">Farmer</option>
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                  {/* You can add more roles here if necessary */}
+                  <option value="Farmer">Farmer</option>
+                  <option value="Supplier">Supplier</option>
+                  <option value="GovernmentOfficial">
+                    Government Official
+                  </option>
+                  <option value="Admin">Admin</option>
                 </select>
               </div>
             )}
@@ -171,7 +264,6 @@ const LoginSignup = () => {
               {isLogin ? 'Login' : 'Sign Up'}
             </Button>
           </form>
-
           <div className="text-center mt-8">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
             <button
