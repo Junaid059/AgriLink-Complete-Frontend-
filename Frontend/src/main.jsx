@@ -22,6 +22,7 @@ import FarmerCalendar from './Comps/weather/FarmerCalender';
 import WeatherDashboard from './Comps/weather/WeatherDashboard';
 import './index.css';
 import { CartProvider } from '/src/Comps/context/CartContext.jsx'; // Default import
+import FeedbackReport from './Comps/supportAndFeedBack/FeedbackReport.jsx';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = true; // Replace with actual authentication check
@@ -133,6 +134,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <AdminFeedbackTracking />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/feedbacks-report',
+    element: (
+      <ProtectedRoute>
+        <FeedbackReport />
       </ProtectedRoute>
     ),
   },
