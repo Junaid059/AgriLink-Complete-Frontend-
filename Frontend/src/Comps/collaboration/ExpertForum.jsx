@@ -17,8 +17,8 @@ import {
   Send,
 } from 'lucide-react';
 import Footer from '../Footer';
-
 const API_BASE_URL = 'http://localhost:3000/api/discussions';
+const TEMP_USER_ID = '674dd1c19a4dbfe260f137ed';
 
 function ExpertForum() {
   const [tags, setTags] = useState([
@@ -27,15 +27,15 @@ function ExpertForum() {
     'help-question',
   ]);
   const [newTag, setNewTag] = useState('');
-  const [postContent, setPostContent] = useState('');
+  const [postTitle, setPostTitle] = useState('');
+  const [postDescription, setPostDescription] = useState('');
   const [file, setFile] = useState(null);
-  const [newComment, setNewComment] = useState('');
+  const [commentInputs, setCommentInputs] = useState({});
   const [replyingTo, setReplyingTo] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all forums/posts on component mount
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -65,17 +65,19 @@ function ExpertForum() {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-    if (postContent.trim()) {
+    if (postTitle.trim() && postDescription.trim()) {
       try {
         const postData = {
-          title: postContent.split('\n')[0] || 'Untitled',
-          description: postContent,
-          status: 'active'
+          title: postTitle.trim(),
+          description: postDescription.trim(),
+          status: 'active',
+          author: TEMP_USER_ID
         };
 
         const response = await axios.post(API_BASE_URL, postData);
         setPosts([response.data, ...posts]);
-        setPostContent('');
+        setPostTitle('');
+        setPostDescription('');
         setTags([]);
         setFile(null);
       } catch (error) {
@@ -85,14 +87,25 @@ function ExpertForum() {
     }
   };
 
+  const handleCommentInputChange = (forumId, value) => {
+    setCommentInputs(prev => ({
+      ...prev,
+      [forumId]: value
+    }));
+  };
+
   const handleCommentSubmit = async (e, forumId) => {
     e.preventDefault();
-    if (newComment.trim()) {
+    const commentText = commentInputs[forumId];
+    if (commentText?.trim()) {
       try {
         const commentData = {
-          author: 'Current User',
-          content: newComment
+          author: TEMP_USER_ID,
+          content: commentText.trim()
         };
+
+        console.log('Sending request to:', `${API_BASE_URL}/${forumId}/posts`);
+        console.log('With data:', JSON.stringify(commentData, null, 2));
 
         const response = await axios.post(
           `${API_BASE_URL}/${forumId}/posts`,
@@ -106,21 +119,27 @@ function ExpertForum() {
               : post
           )
         );
-        setNewComment('');
+        setCommentInputs(prev => ({
+          ...prev,
+          [forumId]: ''
+        }));
       } catch (error) {
-        console.error('Error adding comment:', error);
-        alert('Failed to add comment');
+        console.error('Error details:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+        alert(`Failed to add comment: ${error.response?.data?.message || error.message}`);
       }
     }
   };
 
   const handleReplySubmit = async (e, forumId, postId) => {
     e.preventDefault();
-    if (newComment.trim()) {
+    const replyText = commentInputs[`${forumId}-${postId}`];
+    if (replyText?.trim()) {
       try {
         const replyData = {
-          author: 'Current User',
-          content: newComment
+          postId,
+          author: TEMP_USER_ID,
+          content: replyText.trim()
         };
 
         const response = await axios.post(
@@ -135,7 +154,10 @@ function ExpertForum() {
               : post
           )
         );
-        setNewComment('');
+        setCommentInputs(prev => ({
+          ...prev,
+          [`${forumId}-${postId}`]: ''
+        }));
         setReplyingTo(null);
       } catch (error) {
         console.error('Error adding reply:', error);
@@ -169,12 +191,21 @@ function ExpertForum() {
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handlePostSubmit} className="space-y-4">
-            <textarea
-              className="w-full min-h-[120px] p-3 rounded-lg border resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Hey everyone! 👋\nShare your thoughts..."
-              value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
-            />
+            <div className="space-y-2">
+              <Input
+                type="text"
+                placeholder="Discussion Title"
+                value={postTitle}
+                onChange={(e) => setPostTitle(e.target.value)}
+                className="w-full"
+              />
+              <textarea
+                className="w-full min-h-[120px] p-3 rounded-lg border resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Write your discussion description here..."
+                value={postDescription}
+                onChange={(e) => setPostDescription(e.target.value)}
+              />
+            </div>
             <div className="flex flex-wrap gap-2 items-center">
               {tags.map((tag) => (
                 <Badge key={tag} variant="secondary">
@@ -265,14 +296,22 @@ function ExpertForum() {
                               src="/placeholder.svg"
                               alt="User avatar"
                             />
-                            <AvatarFallback>{comment.author[0]}</AvatarFallback>
+                            <AvatarFallback>U</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{comment.author}</p>
+                            <p className="font-medium">User</p>
                             <p className="text-gray-600">{comment.content}</p>
                             <span className="text-sm text-gray-500">
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(comment._id)}
+                              className="text-sm text-gray-500"
+                            >
+                              Reply
+                            </Button>
                           </div>
                         </div>
                         {comment.comments?.map((reply) => (
@@ -286,12 +325,10 @@ function ExpertForum() {
                                   src="/placeholder.svg"
                                   alt="User avatar"
                                 />
-                                <AvatarFallback>
-                                  {reply.author[0]}
-                                </AvatarFallback>
+                                <AvatarFallback>U</AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{reply.author}</p>
+                                <p className="font-medium">User</p>
                                 <p className="text-gray-600">{reply.content}</p>
                                 <span className="text-sm text-gray-500">
                                   {new Date(reply.createdAt).toLocaleDateString()}
@@ -300,6 +337,24 @@ function ExpertForum() {
                             </div>
                           </div>
                         ))}
+                        {replyingTo === comment._id && (
+                          <form
+                            onSubmit={(e) => handleReplySubmit(e, post._id, comment._id)}
+                            className="flex items-center mt-2 pl-6"
+                          >
+                            <Input
+                              placeholder="Write a reply..."
+                              value={commentInputs[`${post._id}-${comment._id}`] || ''}
+                              onChange={(e) => 
+                                handleCommentInputChange(`${post._id}-${comment._id}`, e.target.value)
+                              }
+                              className="w-full"
+                            />
+                            <Button type="submit" variant="ghost">
+                              <Send className="h-5 w-5" />
+                            </Button>
+                          </form>
+                        )}
                       </div>
                     ))}
                     <form
@@ -308,8 +363,8 @@ function ExpertForum() {
                     >
                       <Input
                         placeholder="Add a comment..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
+                        value={commentInputs[post._id] || ''}
+                        onChange={(e) => handleCommentInputChange(post._id, e.target.value)}
                         className="w-full"
                       />
                       <Button type="submit" variant="ghost">
@@ -329,3 +384,4 @@ function ExpertForum() {
 }
 
 export default ExpertForum;
+
