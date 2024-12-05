@@ -1,13 +1,13 @@
 //SusidyRegulations.jsx
 
-import React, { useState, useEffect, useEffect } from 'react';
-import SearchSubsidies from './SearchSubsidies';
-import SearchRegulations from './SearchRegulations';
+import React, { useState, useEffect } from 'react';
 import SearchSubsidies from './SearchSubsidies';
 import SearchRegulations from './SearchRegulations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import Notifications from './Notifications'; 
+import { BellIcon } from '@heroicons/react/20/solid'; 
 
 
 import {
@@ -17,8 +17,25 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import Footer from '../Footer';
+import Modal from './Modal';
+
+
 
 function SubsidyRegulations() {
+  const [isModalOpen, setIsModalOpen] = useState(false);//for subsidy applicaton details modal
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+
+  const handleButtonClick = (applicationId) => {
+    setSelectedApplicationId(applicationId); 
+    setIsModalOpen(true); 
+  };
+
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicationId(null); 
+  };
+
   const [activeTab, setActiveTab] = useState('subsidies');
   const [expanded, setExpanded] = useState(null);
   const [showFormIndex, setShowFormIndex] = useState(null);
@@ -47,6 +64,17 @@ function SubsidyRegulations() {
   const [startDate, endDate] = dateRange;
   const [applications, setApplications] = useState([]);
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
+
+
+
+
+  const toggleNotifications = () => {
+    setShowNotifications((prev) => !prev);
+  };
+  
+
   const handleBankDetailsChange = (e) => {
     const { name, value } = e.target;
     setBankDetails((prevDetails) => ({
@@ -61,10 +89,10 @@ function SubsidyRegulations() {
       return;
     }
 
-    // Add logic to save bank details via API or update state
+    
     console.log('Bank Details:', bankDetails);
     alert('Bank details updated successfully!');
-    setShowBankDetailsPopup(false); // Close the modal
+    setShowBankDetailsPopup(false);
   };
 
   const applyFilters = () => {
@@ -73,7 +101,7 @@ function SubsidyRegulations() {
     if (activeTab === 'subsidies') {
       const filtered = subsidies.filter((subsidy) => {
         const matchesRegion = region ? subsidy.region === region : true;
-        console.log("region",region," subsidy.region   ",subsidy.region,matchesRegion)
+      //  console.log("region",region," subsidy.region   ",subsidy.region,matchesRegion)
         
         return matchesRegion ;
       });
@@ -141,7 +169,7 @@ const handleTypeChange = (value) => {
     const fetchApplications = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:3000/api/subsidyApplications'); 
+        const response = await fetch('http://localhost:3000/api/subsidyapplications'); 
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
@@ -167,74 +195,93 @@ useEffect(() => {
 }, [applications]);
  
 
-  // Function to handle the subsidy application submission
-  const handleSubmitApplication = async () => {
-    console.log("Selected Subsidy ID:", selectedSubsidyId);
-    if (!cnicFile || !landFile) {
-      alert("Please upload both CNIC and land ownership documents.");
-      return;
-    }
-  
+const handleSubmitApplication = async () => {
+  console.log("Selected Subsidy ID:", selectedSubsidyId);
+  if (!cnicFile || !landFile) {
+    alert("Please upload both CNIC and land ownership documents.");
+    return;
+  }
+
+  const uploadFile = async (file, uploadedBy) => {
     const formData = new FormData();
-    formData.append("cnicDocuments", cnicFile);
-    formData.append("landDocuments", landFile);
-    formData.append("uploadedBy", "63f5f4b5b02fda1234567891"); 
-  
-    try {
-      setLoading(true);
-  
-      // Upload documents
-      const uploadResponse = await fetch('http://localhost:3000/api/upload/upload', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload documents');
-      }
-  
-      const uploadData = await uploadResponse.json();
-      console.log('Documents uploaded:', uploadData);
-  
-      const cnicDocId = uploadData.cnicDocuments[0]._id;
-      const landDocId = uploadData.landDocuments[0]._id;
-      
-      // Create subsidy application with dynamic subsidyId
-      const applicationResponse = await fetch('http://localhost:3000/api/subsidyApplications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          farmer: "63f5f4b5b02fda9876543210", 
-          subsidy: selectedSubsidyId,
-          status: "pending",
-          supportingDocuments: [cnicDocId, landDocId],
-        }),
-      });
-  
-      if (!applicationResponse.ok) {
-        throw new Error('Failed to create subsidy application');
-      }
-  
-      const applicationData = await applicationResponse.json();
-      console.log('Application created:', applicationData);
-  
-      alert('Application submitted successfully!');
-    } catch (err) {
-      console.error(err);
-      setError('Failed to submit application');
-    } finally {
-      setLoading(false);
+    formData.append("file", file); // Matches multer's field name
+    formData.append("uploadedBy", uploadedBy);
+
+    const response = await fetch('http://localhost:3000/api/upload/add', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      throw new Error(errorDetails.error || `Failed to upload document: ${file.name}`);
     }
-  };
-  
-  
+
+    const data = await response.json();
+    console.log(`Document uploaded: ${file.name}`, data);
+    return data.documentId; // Return the document ID
+};
+
+  try {
+    setLoading(true);
+
+    // Upload CNIC and land documents
+    const uploadedBy = "63f5f4b5b02fda1234567891"; // Replace with the actual user ID
+    const cnicDocId = await uploadFile(cnicFile, uploadedBy);
+    const landDocId = await uploadFile(landFile, uploadedBy);
+
+    console.log("CNIC Document ID:", cnicDocId);
+    console.log("Land Document ID:", landDocId);
+
+    // Create subsidy application with dynamic subsidyId
+    const applicationResponse = await fetch('http://localhost:3000/api/subsidyapplications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        farmer: "63f5f4b5b02fda9876543210", // Replace with actual farmer ID
+        subsidy: selectedSubsidyId,
+        status: "pending",
+        supportingDocuments: [cnicDocId, landDocId],
+        user:"674dd1c19a4dbfe260f137ef",
+        
+      }),
+    });
+
+    if (!applicationResponse.ok) {
+      throw new Error('Failed to create subsidy application');
+    }
+
+    const applicationData = await applicationResponse.json();
+    console.log('Application created:', applicationData);
+
+    alert('Application submitted successfully!');
+  } catch (err) {
+    console.error(err);
+    setError('Failed to submit application');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   return (
     <div className="min-h-screen bg-gray-50">
       
-      
       <main className="container mx-auto py-8 px-4">
+        {/* Notifications Button */}
+        <div className="absolute top-5 right-10">
+            <BellIcon 
+            className="w-6 h-6 text-gray-600 cursor-pointer" 
+            onClick={toggleNotifications}
+          />
+        
+        </div>
+
+        {/* Notifications Popup */}
+        {showNotifications && <Notifications  onClose={toggleNotifications} />}
+
+
       <div className="flex justify-center space-x-4 mb-8">
           <Button
             onClick={() => setActiveTab('subsidies')}
@@ -266,13 +313,13 @@ useEffect(() => {
             Update Your Bank Details
           </Button>
         </div>
-        <div className="text-right mt-4 mb-10">
+        {/* <div className="text-right mt-4 mb-10">
           <Button
             className="bg-green-500 text-white hover:bg-green-800 w-[190px]"
           >
             Show My BookMarks
           </Button>
-        </div>
+        </div> */}
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -318,17 +365,13 @@ useEffect(() => {
 
         </div>
 
-        {/* <Button onClick={applyFilters} className="bg-blue-600 text-white">
-          Apply Filters
-        </Button> */}
-
-
+      
         {activeTab === 'subsidies' ? (
           <>
             <SearchSubsidies subsidies={subsidies} onSearch={setFilteredSubsidies} />
             {filteredSubsidies.map((subsidy, index) => {
             const matchingApplication = applications.find(
-              (app) => app.subsidy === subsidy._id
+              (app) => app.subsidy._id === subsidy._id
             );
 
             return (
@@ -343,13 +386,23 @@ useEffect(() => {
                   <p className="text-lg">Region: {subsidy.region}</p>
                 </div>
                 <div className="mt-4">
-                  {matchingApplication ? (
-                    <Button
-                      className="bg-green-600 hover:bg-green-700"
-                     // onClick={() => alert("View application details here.")} 
-                    >
-                     {matchingApplication.status}
-                    </Button>
+                {matchingApplication ? (
+                  <Button
+                    className={`${
+                      matchingApplication.status === 'rejected'
+                        ? 'bg-red-600 hover:bg-red-700'
+                        : matchingApplication.status === 'approved'
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : matchingApplication.status === 'pending'
+                        ? 'bg-yellow-600 hover:bg-yellow-700'
+                        : ''
+                    }`}
+                    onClick={() => handleButtonClick(matchingApplication._id)}
+                 >
+                    {matchingApplication.status}
+                    
+                  </Button>
+
                   ) : (
                     <>
                       <Button
@@ -361,41 +414,6 @@ useEffect(() => {
                       >
                         {showFormIndex === index ? 'Close' : 'Apply'}
                       </Button>
-                      {showFormIndex === index && (
-                        <Button
-                          onClick={() => {
-                            setShowFormIndex(showFormIndex === index ? null : index);
-                          }}
-                          className="w-full bg-green-600 hover:bg-green-700"
-                          disabled={loading}
-                        >
-                          {loading ? 'Submitting...' : 'Submit Application'}
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-
-          </>
-        ) : (
-          <>
-            <SearchRegulations regulations={regulations} onSearch={setFilteredRegulations} />
-            {filteredRegulations.map((regulation, index) => (
-              <Card key={index} className="p-6 mb-20 bg-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{regulation.title}</h2>
-                <p className="text-gray-600 mb-4">{expanded === index ? regulation.fullDescription : regulation.description}</p>
-                <div className="space-y-2 text-sm text-gray-500">
-                  <p className="text-lg">Effective Date: {regulation.effectiveDate}</p>
-                  <p className="text-lg">Category: {regulation.category}</p>
-                  <p className="text-lg">Type: {regulation.type}</p>
-                </div>
-              </Card>
-            ))}
-          </>
-        )}
                       {showFormIndex === index && (
                         <Button
                           onClick={() => {
@@ -483,7 +501,6 @@ useEffect(() => {
                 </div>
                 <Button
                   onClick={handleSaveBankDetails}
-                  onClick={handleSaveBankDetails}
                   className="w-full bg-green-600 hover:bg-green-700"
                 >
                   Save Details
@@ -548,7 +565,7 @@ useEffect(() => {
                   </form>
                   <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                    onClick={() => setShowFormIndex(null)} // Close modal on click
+                    onClick={() => setShowFormIndex(null)} 
                     aria-label="Close"
                   >
                     &times;
@@ -557,81 +574,16 @@ useEffect(() => {
               </div>
             )}
 
-
-
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                onClick={() => setShowBankDetailsPopup(false)} // Close modal on click
-                aria-label="Close"
-              >
-                &times;
-              </button>
-            </div>
-          </div>
-        )}
-
-        
-
-        <div className="flex justify-center items-center min-h-screen">
-          
-          {/* Subsidy Application Form Modal */}
-            {showFormIndex !== null && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
-                <div className="relative w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-semibold mb-4 text-center">Apply for Subsidy</h3>
-                  <form className="space-y-4">
-                    <Select>
-                      <SelectTrigger className="w-full">Select Subsidy Type</SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="organic_farming">Organic Farming</SelectItem>
-                        <SelectItem value="irrigation_system">Irrigation System</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <div>
-                      <label className="block mb-1 text-sm font-medium text-gray-700">
-                        Upload CNIC Copy
-                      </label>
-                      <Input
-                        type="file"
-                        className="w-full"
-                        onChange={handleCnicFileChange}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-sm font-medium text-gray-700">
-                        Upload Land Ownership Docs
-                      </label>
-                      <Input
-                        type="file"
-                        className="w-full"
-                        onChange={handleLandFileChange}
-                      />
-                    </div>
-                    <Button
-                      onClick={handleSubmitApplication}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                      disabled={loading}
-                    >
-                      {loading ? 'Submitting...' : 'Submit Application'}
-                    </Button>
-                    {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-                  </form>
-                  <button
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                    onClick={() => setShowFormIndex(null)} // Close modal on click
-                    aria-label="Close"
-                  >
-                    &times;
-                  </button>
-                </div>
-              </div>
-            )}
+            <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            applicationId={selectedApplicationId} 
+          />
 
 
 
         </div>
       </main>
-
 
       <Footer />
     </div>
