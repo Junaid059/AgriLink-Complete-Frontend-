@@ -14,6 +14,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { Upload, X } from 'lucide-react';
 
+
 function DiagnosisForm({ onSubmit }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -37,12 +38,62 @@ function DiagnosisForm({ onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-    for (let i = 0; i <= 100; i += 10) {
-      setProgress(i);
-      await new Promise((resolve) => setTimeout(resolve, 200));
+    // for (let i = 0; i <= 100; i += 10) {
+    //   setProgress(i);
+    //   await new Promise((resolve) => setTimeout(resolve, 200));
+    // }
+    // setUploading(false);
+    // onSubmit({ file, cropType, location });
+    const formData = new FormData();
+    formData.append('image', file);
+    // formData.append('cropType', cropType);
+    // formData.append('location', location);
+    try{
+    const response=await fetch('http://localhost:8000/predict', {
+      method: 'POST',
+      body: formData,
+    });
+   
+    if(!response.ok || response.status!==200){
+      console.log('Error');
+      alert('Error');
+      setFile(null);
+      setPreview(null);
+      setUploading(false);
+      setProgress(0);
+      return;
     }
+    const data=await response.json();
     setUploading(false);
-    onSubmit({ file, cropType, location });
+    setProgress(0);
+
+    setFile(null);
+    onSubmit(data);
+  }
+  catch(err){
+    console.error(err);
+    alert('Error');
+    setFile(null);
+    setPreview(null);
+    setUploading(false);
+    setProgress(0);
+
+  }
+
+    
+
+      
+      // .then((res) => res.json())
+      // .then((data) => {
+      //   setUploading(false);
+      //   setProgress(0);
+      //   setFile(null);
+      //   onSubmit(data.prediction);
+        
+      // })
+      // .catch((err) => {
+      //   console.error(err);
+      // });
   };
 
   return (
@@ -142,7 +193,7 @@ function DiagnosisForm({ onSubmit }) {
           <Button
             type="submit"
             className="w-full bg-green-500 hover:bg-green-600 text-white"
-            disabled={!file || uploading}
+          
           >
             {uploading ? 'Analyzing...' : 'Submit for Diagnosis'}
           </Button>
