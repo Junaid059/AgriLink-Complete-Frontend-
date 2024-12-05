@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 function Chat() {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,8 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -26,9 +24,6 @@ const FeedbackForm = () => {
     category: '',
     feedback: '',
     rating: 0,
-    experience: '',
-    improvements: '',
-    wouldRecommend: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -179,59 +174,6 @@ const FeedbackForm = () => {
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <Label>How would you describe your experience?</Label>
-                  <RadioGroup
-                    name="experience"
-                    value={formData.experience}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, experience: value }))
-                    }
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="excellent" id="excellent" />
-                      <Label htmlFor="excellent">Excellent</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="good" id="good" />
-                      <Label htmlFor="good">Good</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="average" id="average" />
-                      <Label htmlFor="average">Average</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="poor" id="poor" />
-                      <Label htmlFor="poor">Poor</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="space-y-4">
-                  <Label htmlFor="improvements">What could we improve?</Label>
-                  <Textarea
-                    id="improvements"
-                    name="improvements"
-                    value={formData.improvements}
-                    onChange={handleChange}
-                    placeholder="Please suggest any improvements..."
-                    rows={4}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="wouldRecommend"
-                    checked={formData.wouldRecommend}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev }))
-                    }
-                  />
-                  <Label htmlFor="wouldRecommend">
-                    I would recommend AgriLink to others
-                  </Label>
-                </div>
-
                 <div className="flex gap-4 pt-4">
                   <Button
                     type="submit"
@@ -275,7 +217,7 @@ const FeedbackForm = () => {
       <Footer></Footer>
 
       <Button
-        className="fixed bottom-4 right-4 bg-green-600 text-white hover:bg-green-700"
+        className="fixed bottom-20 right-10 bg-green-600 text-white hover:bg-green-700"
         onClick={() => setShowChatWindow(true)}
       >
         Need Help?
