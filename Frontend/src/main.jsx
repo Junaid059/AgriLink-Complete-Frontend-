@@ -43,14 +43,12 @@ import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
 import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
 import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
-function ProtectedRoute({ children, requiredRole }) {
-  const role = localStorage.getItem('role'); // Get role from localStorage
-
+function ProtectedRoute({ children }) {
+  const role = localStorage.getItem('role');
   if (!role) {
-    return <Navigate to="/signup" />;
+    return <Navigate to="/login" />;
   }
-
-  return role === requiredRole ? children : <Navigate to="/" />;
+  return children;
 }
 
 function AppLayout() {
@@ -67,11 +65,12 @@ const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
-      { path: '/signup', element: <LoginSignup /> },
+      { index: true, path: '/', element: <Navigate to="/login" /> },
+      { path: 'login', element: <LoginSignup /> },
       {
         path: '/',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Home />
           </ProtectedRoute>
         ),
@@ -79,7 +78,7 @@ const router = createBrowserRouter([
       {
         path: '/marketplace',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Market />
           </ProtectedRoute>
         ),
@@ -87,7 +86,7 @@ const router = createBrowserRouter([
       {
         path: '/marketplace/product/:id',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Product />
           </ProtectedRoute>
         ),
@@ -95,7 +94,7 @@ const router = createBrowserRouter([
       {
         path: '/services',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Service />
           </ProtectedRoute>
         ),
@@ -103,7 +102,7 @@ const router = createBrowserRouter([
       {
         path: '/service/tools/:id',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Tools />
           </ProtectedRoute>
         ),
@@ -111,7 +110,7 @@ const router = createBrowserRouter([
       {
         path: '/blogs',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Blog />
           </ProtectedRoute>
         ),
@@ -119,7 +118,7 @@ const router = createBrowserRouter([
       {
         path: '/weather',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <WeatherDashboard />
           </ProtectedRoute>
         ),
@@ -127,7 +126,7 @@ const router = createBrowserRouter([
       {
         path: '/feedback',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <FeedbackForm />
           </ProtectedRoute>
         ),
@@ -135,7 +134,7 @@ const router = createBrowserRouter([
       {
         path: '/farmerCalendar',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <FarmerCalendar />
           </ProtectedRoute>
         ),
@@ -143,7 +142,7 @@ const router = createBrowserRouter([
       {
         path: '/subsidyregulations',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <SubsidyRegulations />
           </ProtectedRoute>
         ),
@@ -151,7 +150,7 @@ const router = createBrowserRouter([
       {
         path: '/crop',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Layout>
               <CropDash />
             </Layout>
@@ -161,7 +160,7 @@ const router = createBrowserRouter([
       {
         path: '/contribute',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Layout>
               <ContributePage />
             </Layout>
@@ -171,7 +170,7 @@ const router = createBrowserRouter([
       {
         path: '/dataset',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Layout>
               <DatasetPage />
             </Layout>
@@ -181,7 +180,7 @@ const router = createBrowserRouter([
       {
         path: '/profile',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <Layout>
               <ProfilePage />
             </Layout>
@@ -191,7 +190,7 @@ const router = createBrowserRouter([
       {
         path: '/loan',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <LoanPage />
           </ProtectedRoute>
         ),
@@ -199,49 +198,33 @@ const router = createBrowserRouter([
       {
         path: '/expert-forum',
         element: (
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute>
             <ExpertForum />
           </ProtectedRoute>
         ),
       },
       // {
-      //   path: '/supply-chain',
+      //   path: '/farmer',
       //   element: (
-      //     <ProtectedRoute requiredRole="user">
-      //       <Page />
+      //     <ProtectedRoute>
+      //       <FarmerDashboardPage />
       //     </ProtectedRoute>
       //   ),
       // },
       // {
-      //   path: '/Management',
+      //   path: '/farmer-Profile',
       //   element: (
-      //     <ProtectedRoute requiredRole="user">
-      //       <ManagementPage />
+      //     <ProtectedRoute>
+      //       <FarmerProfilePage />
       //     </ProtectedRoute>
       //   ),
       // },
-      {
-        path: '/farmer',
-        element: (
-          <ProtectedRoute requiredRole="user">
-            <FarmerDashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/farmer-Profile',
-        element: (
-          <ProtectedRoute requiredRole="user">
-            <FarmerProfilePage />
-          </ProtectedRoute>
-        ),
-      },
     ],
   },
   {
     path: '/admin-panel',
     element: (
-      <ProtectedRoute requiredRole="admin">
+      <ProtectedRoute>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -252,6 +235,8 @@ const router = createBrowserRouter([
       { path: 'charts', element: <ChartsPage /> },
       { path: 'gov-dashboard', element: <DashboardPage /> },
       { path: 'management', element: <ManagementPage /> },
+      { path: 'farmer', element: <FarmerDashboardPage /> },
+      { path: 'farmer-profile', element: <FarmerProfilePage /> },
       { path: 'supply-chain', element: <Page /> },
       { path: 'table', element: <TablePage /> },
       { path: 'form', element: <FormPage /> },

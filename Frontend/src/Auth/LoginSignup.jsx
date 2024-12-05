@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaGoogle } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 
@@ -9,6 +9,7 @@ const LoginSignup = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -40,10 +41,17 @@ const LoginSignup = () => {
       password === userCredentials.password
     ) {
       localStorage.setItem('role', 'user');
-      navigate('/');
+
+      const redirectTo = location.state?.from || '/';
+      navigate(redirectTo);
     } else {
       alert('Invalid email or password.');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('role');
+    navigate('/login');
   };
 
   return (
@@ -115,6 +123,13 @@ const LoginSignup = () => {
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors"
             >
               {isLogin ? 'Login' : 'Sign Up'}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleLogout}
+              className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors"
+            >
+              Logout
             </Button>
           </form>
 

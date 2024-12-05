@@ -12,8 +12,40 @@ import { Input } from '@/components/ui/input';
 import { LineChart } from 'lucide-react';
 import Header from '../UserHeader';
 import Footer from '../Footer';
+import { toast } from 'react-hot-toast';
 
 function WeatherDashboard() {
+  const handleRealTimeClick = () => {
+    toast.success('Showing real-time weather data');
+  };
+
+  const handle7DayHistoryClick = () => {
+    toast.info('Showing 7-day weather history');
+  };
+
+  const handle3DayForecastClick = () => {
+    toast.warning('Showing 3-day weather forecast');
+  };
+
+  const handleGetExtremeWeatherAlertsClick = () => {
+    toast.error('Extreme weather alerts enabled');
+  };
+
+  const handleGetCustomizableWeatherAlertsClick = () => {
+    toast.loading('Setting up customizable weather alerts');
+  };
+
+  const handleGetCustomAlertClick = () => {
+    toast.custom((t) => (
+      <div className="bg-white shadow-lg rounded-lg p-4">
+        <h3 className="text-lg font-bold">Custom Weather Alert</h3>
+        <p>
+          You will be notified when the specified weather conditions are met.
+        </p>
+      </div>
+    ));
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8">
