@@ -1,63 +1,65 @@
-import { ChevronDown, Filter, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { ChevronDown, Filter, Search, Trash2 } from 'lucide-react';
 import Footer from '../Footer';
 import Header from '../Header';
 
-const dummyFeedbacks = [
-  {
-    _id: '1',
-    content: 'The website is not mobile responsive',
-    category: 'Website',
-    userId: { _id: 'user1', name: 'John Doe' },
-  },
-  {
-    _id: '2',
-    content: 'Customer support was very helpful',
-    category: 'Customer Support',
-    userId: { _id: 'user2', name: 'Jane Smith' },
-  },
-  {
-    _id: '3',
-    content: 'Product quality needs improvement',
-    category: 'Product',
-    userId: { _id: 'user3', name: 'Mike Johnson' },
-  },
-  {
-    _id: '4',
-    content: 'Delivery service was delayed',
-    category: 'Service',
-    userId: { _id: 'user4', name: 'Sarah Williams' },
-  },
-];
-
-const categories = ['Product', 'Service', 'Website', 'Customer Support'];
+const categories = ['product', 'service', 'website', 'customer Support'];
 
 const AdminFeedbackTracking = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const getStatusColor = (status) => {
-    const colors = {
-      Pending: 'bg-yellow-100 text-yellow-800',
-      'In Progress': 'bg-blue-100 text-blue-800',
-      Resolved: 'bg-green-100 text-green-800',
+  const [allFeedbacks, setAllFeedbacks] = useState([]);
+  const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
+  const [deleteId, setDeleteId] = useState(null);
+  
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/admin/api/user/track-feedback');
+        setAllFeedbacks(response.data);
+        setFilteredFeedbacks(response.data);
+      } catch (error) {
+        console.error('Error fetching feedbacks:', error);
+      }
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+
+    fetchFeedbacks();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/admin/delete-feedback/${id}`);
+      // Update both feedback states to remove the deleted item
+      const updatedFeedbacks = allFeedbacks.filter(feedback => feedback._id !== id);
+      setAllFeedbacks(updatedFeedbacks);
+      setFilteredFeedbacks(filteredFeedbacks.filter(feedback => feedback._id !== id));
+      setDeleteId(null); // Close the confirmation dialog
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+    }
   };
 
-  const filteredFeedbacks = dummyFeedbacks.filter((feedback) => {
-    const matchesSearch =
-      feedback.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      feedback.userId.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      !selectedCategory || feedback.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    const filtered = allFeedbacks.filter(feedback => {
+      const matchesSearch = 
+        feedback.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        feedback.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = 
+        !selectedCategory || 
+        feedback.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    setFilteredFeedbacks(filtered);
+  }, [searchQuery, selectedCategory, allFeedbacks]);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header></Header>
+      <Header />
       <main className="flex-grow bg-gray-100 py-12">
         <div className="container mx-auto px-4">
           <div className="p-6 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
@@ -65,9 +67,8 @@ const AdminFeedbackTracking = () => {
               <h1 className="text-2xl font-bold mb-4">Feedback Management</h1>
 
               <div className="flex flex-col md:flex-row gap-4">
-                {/* Search Input */}
                 <div className="relative flex-1">
-                  <Search
+                  <Search 
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                     size={20}
                   />
@@ -80,7 +81,6 @@ const AdminFeedbackTracking = () => {
                   />
                 </div>
 
-                {/* Category Filter Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -122,7 +122,6 @@ const AdminFeedbackTracking = () => {
               </div>
             </div>
 
-            {/* Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border rounded-lg">
                 <thead className="bg-gray-50">
@@ -136,13 +135,16 @@ const AdminFeedbackTracking = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredFeedbacks.map((feedback) => (
                     <tr key={feedback._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {feedback.userId.name}
+                        {feedback.name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 max-w-md">
                         {feedback.content}
@@ -152,6 +154,32 @@ const AdminFeedbackTracking = () => {
                           {feedback.category}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {deleteId === feedback._id ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Are you sure?</span>
+                            <button 
+                              onClick={() => handleDelete(feedback._id)}
+                              className="text-red-600 hover:text-red-800 px-2 py-1 text-sm"
+                            >
+                              Yes
+                            </button>
+                            <button 
+                              onClick={() => setDeleteId(null)}
+                              className="text-gray-600 hover:text-gray-800 px-2 py-1 text-sm"
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button 
+                            onClick={() => setDeleteId(feedback._id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -160,7 +188,7 @@ const AdminFeedbackTracking = () => {
           </div>
         </div>
       </main>
-      <Footer></Footer>{' '}
+      <Footer />
     </div>
   );
 };

@@ -23,6 +23,7 @@ const FeedbackForm = () => {
     email: '',
     category: '',
     feedback: '',
+    status: '',
     rating: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +50,7 @@ const FeedbackForm = () => {
           feedback: formData.feedback,
           category: formData.category,
           rating: formData.rating,
+          status: 'Published'
         }),
       });
 
