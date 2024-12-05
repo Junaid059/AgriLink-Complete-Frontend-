@@ -24,7 +24,7 @@ function RecordsManagement() {
   const [pesticideRecords, setPesticideRecords] = useState([]);
   const [supplierRecords, setSupplierRecords] = useState([]);
   const [formData, setFormData] = useState({
-    seedId: '',
+   
     name: '',
     type: '',
     description: '',
@@ -35,7 +35,7 @@ function RecordsManagement() {
     origin: '',
     isCertified: false,
     supplierId: '',
-    pesticideId: '',
+
     expiryDate: '',
     compliance: false,
     usageInstructions: '',
@@ -60,7 +60,7 @@ function RecordsManagement() {
 
     // Clear form and close dialog
     setFormData({
-      seedId: '',
+      
       name: '',
       type: '',
       description: '',
@@ -71,7 +71,7 @@ function RecordsManagement() {
       origin: '',
       isCertified: false,
       supplierId: '',
-      pesticideId: '',
+      
       expiryDate: '',
       compliance: false,
       usageInstructions: '',
@@ -130,13 +130,23 @@ function RecordsManagement() {
 
       {/* Tab Content */}
       <div className="mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <Button
-            onClick={() => setIsDialogOpen(true)}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-          </Button>
+        <div className='flex justify-start ' >
+          <div className="flex justify-between items-center mb-4 mr-2">
+            <Button
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </Button>
+          </div>
+          <div className="flex justify-between items-center mb-4">
+            <Button
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Use {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </Button>
+          </div>
         </div>
 
         {/* Table for each type */}
@@ -167,7 +177,7 @@ function RecordsManagement() {
               {activeTab === 'supplier' ? (
                 supplierRecords.map((record, index) => (
                   <TableRow key={index}>
-                    <TableCell>{record.supplierId}</TableCell>
+                   
                     <TableCell>{record.name}</TableCell>
                     <TableCell>{record.contact_email}</TableCell>
                     <TableCell>{record.rating}</TableCell>
@@ -240,12 +250,7 @@ function RecordsManagement() {
             <div className="grid gap-4 py-4">
               {activeTab === 'seed' && (
                 <>
-                  <Input
-                    placeholder="Seed ID"
-                    value={formData.seedId}
-                    onChange={(e) => setFormData({ ...formData, seedId: e.target.value })}
-                    className="border p-2 rounded"
-                  />
+                 
                   <Input
                     placeholder="Name"
                     value={formData.name}
@@ -299,12 +304,7 @@ function RecordsManagement() {
 
               {activeTab === 'pesticide' && (
                 <>
-                  <Input
-                    placeholder="Pesticide ID"
-                    value={formData.pesticideId}
-                    onChange={(e) => setFormData({ ...formData, pesticideId: e.target.value })}
-                    className="border p-2 rounded"
-                  />
+                 
                   <Input
                     placeholder="Name"
                     value={formData.name}
@@ -364,12 +364,7 @@ function RecordsManagement() {
 
               {activeTab === 'supplier' && (
                 <>
-                  <Input
-                    placeholder="Supplier ID"
-                    value={formData.supplier_id}
-                    onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
-                    className="border p-2 rounded"
-                  />
+
                   <Input
                     placeholder="Name"
                     value={formData.name}
