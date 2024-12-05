@@ -144,78 +144,87 @@ function RecordsManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Te</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Actions</TableHead>
+                {activeTab === 'supplier' ? (
+                  <>
+                    <TableHead>Supplier ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Rating</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </>
+                ) : (
+                  <>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {
-                activeTab === 'supplier' ? (
-                  supplierRecords.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{record.supplierId}</TableCell>
-                      <TableCell>{record.name}</TableCell>
-                      <TableCell>{record.contact_phone}</TableCell>
-                      <TableCell>{record.contact_email}</TableCell>
-                      <TableCell>{record.rating}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleDeleteRecord(index, activeTab)}
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : activeTab === 'pesticide' ? (
-                  pesticideRecords.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{record.name}</TableCell>
-                      <TableCell>{record.type}</TableCell>
-                      <TableCell>{record.quantity}</TableCell>
-                      <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleDeleteRecord(index, activeTab)}
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  seedRecords.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{record.name}</TableCell>
-                      <TableCell>{record.type}</TableCell>
-                      <TableCell>{record.quantity}</TableCell>
-                      <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleDeleteRecord(index, activeTab)}
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )
-              }
+              {activeTab === 'supplier' ? (
+                supplierRecords.map((record, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{record.supplierId}</TableCell>
+                    <TableCell>{record.name}</TableCell>
+                    <TableCell>{record.contact_email}</TableCell>
+                    <TableCell>{record.rating}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteRecord(index, activeTab)}
+                        className="text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : activeTab === 'pesticide' ? (
+                pesticideRecords.map((record, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{record.name}</TableCell>
+                    <TableCell>{record.type}</TableCell>
+                    <TableCell>{record.quantity}</TableCell>
+                    <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteRecord(index, activeTab)}
+                        className="text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                seedRecords.map((record, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{record.name}</TableCell>
+                    <TableCell>{record.type}</TableCell>
+                    <TableCell>{record.quantity}</TableCell>
+                    <TableCell>{record.dateOfPurchase || record.expiryDate || ''}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteRecord(index, activeTab)}
+                        className="text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
-
           </Table>
+
         </div>
       </div>
 
