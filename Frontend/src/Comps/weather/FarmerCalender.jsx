@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import Header from '../UserHeader';
 import Footer from '../Footer';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+
+import CropCalendar from './components/CropCalendar';
+import { Crop } from 'lucide-react';
+import FarmerCalenderService from '../../services/FarmerCalenderService';
 
 const months = ['January', 'February', 'March', 'April'];
 const crops = ['Corn', 'Wheat', 'Soybeans', 'Rice'];
@@ -27,6 +33,16 @@ const activities = {
 };
 
 function FarmerCalendar() {
+  const [data, setData] = useState();
+  const [selectedCountry, setSelectedCountry] = useState();
+  const [selectedRegion, setSelectedRegion] = useState();
+  const [selectedCity, setSelectedCity] = useState();
+  const [selectedCrop, setSelectedCrop] = useState();
+
+  useEffect(() => {
+
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -40,20 +56,34 @@ function FarmerCalendar() {
             Providing crop recommendations based on region and weather forecast
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Country</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pakistan">Pakistan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Region</label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select region" />
+                  <SelectValue placeholder="Select Region" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="midwest">Midwest</SelectItem>
-                  <SelectItem value="northeast">Northeast</SelectItem>
-                  <SelectItem value="southeast">Southeast</SelectItem>
-                  <SelectItem value="southwest">Southwest</SelectItem>
+                  <SelectItem value="region">Region</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Enter City</label>
+              <Input type="text" placeholder="Enter City" />
             </div>
 
             <div className="space-y-2">
@@ -64,37 +94,9 @@ function FarmerCalendar() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="corn">Corn</SelectItem>
-                  <SelectItem value="wheat">Wheat</SelectItem>
-                  <SelectItem value="soybeans">Soybeans</SelectItem>
-                  <SelectItem value="rice">Rice</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Month</TableHead>
-                  {crops.map((crop) => (
-                    <TableHead key={crop}>{crop}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {months.map((month, index) => (
-                  <TableRow key={month}>
-                    <TableCell className="font-medium">{month}</TableCell>
-                    {crops.map((crop) => (
-                      <TableCell key={`${month}-${crop}`}>
-                        {activities[crop][index]}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
           </div>
 
           <Button className="w-full md:w-auto bg-green-500 hover:bg-green-600">
