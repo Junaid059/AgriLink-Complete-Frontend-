@@ -17,47 +17,55 @@ import Footer from '../Footer';
 import WeatherHistoryTable from './WeatherTable'; 
 
 function WeatherDashboard() {
-  const [weatherData, setWeatherData] = useState(null);
   const [hourlyData, setHourlyData] = useState([]);
   const [historicalData, setHistoricalData] = useState([]);
   const [forecastData, setForecastData] = useState([]);
   const [view, setView] = useState('real-time');
-  const [expandedRow, setExpandedRow] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+   // Fetch farmer profile to get latitude and longitude
+   
+    useEffect(() => {
+      const fetchFarmLocation = async () => {
+        try {
+          const response = await fetch(
+            'https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543211'
+          );
+          const result = await response.json();
+          const lat = result.farmDetails.farmLocation.latitude;
+          const long  = result.farmDetails.farmLocation.longitude;
+          console.log("mama")
+          setLatitude(lat);
+          setLongitude(long);
+          console.log("lat", latitude, "long", longitude)
+        } catch (error) {
+          console.error('Error fetching farm location:', error);
+        }
+      };
+
+      fetchFarmLocation();
+    }, []);
 
   useEffect(() => {
-  //hourly
-    fetch('http://localhost:3001/forecast/hourly?q=33.626057,73.071442')
-      .then(response => response.json())
-      .then(data => {
-      
-        setHourlyData(data || []); 
-        console.log('Hourly Datas:', hourlyData.data);
-      })
-      .catch(error => console.error('Error fetching weather data:', error));
-  }, []);
-
-  useEffect(() => {
-    //current
-    const fetchWeatherData = async () => {
-      try {
-        const response = await fetch(
-          'http://localhost:3001/weather/current?lat=33.5651091&lon=73.016914'
-        );
-        const result = await response.json();
-        setWeatherData(result.data);
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-      }
-    };
-
-    fetchWeatherData();
-  }, []);
+    if (latitude && longitude) {
+      // Fetch hourly weather data
+      fetch(`http://localhost:3001/forecast/hourly?q=${latitude},${longitude}`)
+        .then(response => response.json())
+        .then(data => {
+          setHourlyData(data || []);
+          console.log('Hourly Data:', data);
+        })
+        .catch(error => console.error('Error fetching hourly weather data:', error));
+  
+    }
+  }, [latitude, longitude]);
 
 
   const fetchHistoricalData = async () => {
     try {
       const response = await fetch(
-        'http://localhost:3001/history/historical-weather?lat=33.565109&lon=73.016914'
+        `http://localhost:3001/history/historical-weather?lat=${latitude}&lon=${longitude}`
       );
       const result = await response.json();
     
@@ -71,7 +79,7 @@ function WeatherDashboard() {
   const fetchForecastData = async () => {
     try {
       const response = await fetch(
-        'http://localhost:3001/forecast/3-day?q=33.626057, 73.071442'
+        `http://localhost:3001/forecast/3-day?q=${latitude},${longitude}`
       );
       const result = await response.json();
     
@@ -123,31 +131,31 @@ function WeatherDashboard() {
             </div>
 
             <div className="mt-4 space-y-4">
-              {view === 'real-time' && weatherData && weatherData.current && (
+              {view === 'real-time' && hourlyData.data && hourlyData.data.current && (
                 <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 max-w-lg mx-auto">
                   <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                    Current Weather in <span className="text-black-600">{weatherData.location.name}</span>
+                    Current Weather in <span className="text-black-600">{hourlyData.data.location.name}</span>
                   </h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Condition:</span>
-                      <span className="text-gray-800 font-medium">{weatherData.current.condition.text}</span>
+                      <span className="text-gray-800 font-medium">{hourlyData.data.current.condition.text}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Temperature:</span>
-                      <span className="text-gray-800 font-medium">{weatherData.current.temp_c}°C</span>
+                      <span className="text-gray-800 font-medium">{hourlyData.data.current.temp_c}°C</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Wind:</span>
-                      <span className="text-gray-800 font-medium">{weatherData.current.wind_kph} km/h</span>
+                      <span className="text-gray-800 font-medium">{hourlyData.data.current.wind_kph} km/h</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Humidity:</span>
-                      <span className="text-gray-800 font-medium">{weatherData.current.humidity}%</span>
+                      <span className="text-gray-800 font-medium">{hourlyData.data.current.humidity}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Visibility:</span>
-                      <span className="text-gray-800 font-medium">{weatherData.current.vis_km} km</span>
+                      <span className="text-gray-800 font-medium">{hourlyData.data.current.vis_km} km</span>
                     </div>
                   </div>
                 </div>
