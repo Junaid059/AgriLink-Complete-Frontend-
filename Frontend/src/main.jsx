@@ -38,8 +38,7 @@ import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
 import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
-import ChartsPage from './Comps/AdminPanel/AdminDashboard/ChartsPage';
-import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
+import AnalyticsPage from './Comps/AdminPanel/Analytics/AnalyticsPage';
 import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
 import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
@@ -249,11 +248,10 @@ const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: 'home', element: <AdminDashboard /> },
       { path: 'products', element: <ProductsPage /> },
-      { path: 'charts', element: <ChartsPage /> },
+      { path: 'analytics', element: <AnalyticsPage /> },
       { path: 'gov-dashboard', element: <DashboardPage /> },
       { path: 'management', element: <ManagementPage /> },
       { path: 'supply-chain', element: <Page /> },
-      { path: 'table', element: <TablePage /> },
       { path: 'form', element: <FormPage /> },
     ],
   },
