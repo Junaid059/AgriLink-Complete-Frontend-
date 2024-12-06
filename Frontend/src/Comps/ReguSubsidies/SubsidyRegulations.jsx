@@ -336,7 +336,7 @@ const handleSubmitApplication = async () => {
         subsidy: selectedSubsidyId,
         status: "pending",
         supportingDocuments: [cnicDocId, landDocId],
-        user:"67520df8e097dedca2d7fa51",
+        user:"674dd1c19a4dbfe260f137ed",
         
       }),
     });
