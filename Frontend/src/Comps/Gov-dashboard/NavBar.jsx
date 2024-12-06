@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 const Navbar = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const userId = '674dd1c19a4dbfe260f137ed'; // Replace with the actual user ID or dynamic value
+  const userId = '674dd1c19a4dbfe260f137ed';
 
   // Fetch notifications on component mount
   useEffect(() => {

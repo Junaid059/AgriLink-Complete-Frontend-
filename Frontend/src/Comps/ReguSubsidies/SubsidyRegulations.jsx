@@ -8,6 +8,9 @@ import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import Notifications from './Notifications'; 
+import { BellIcon } from '@heroicons/react/20/solid'; 
+
 
 import {
   Select,
@@ -16,16 +19,33 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import Footer from '../Footer';
+import Modal from './Modal';
+
+
 
 function SubsidyRegulations() {
+  const [isModalOpen, setIsModalOpen] = useState(false);//for subsidy applicaton details modal
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+
+  const handleButtonClick = (applicationId) => {
+    setSelectedApplicationId(applicationId); 
+    setIsModalOpen(true); 
+  };
+
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicationId(null); 
+  };
+
   const [activeTab, setActiveTab] = useState('subsidies');
   const [expanded, setExpanded] = useState(null);
   const [showFormIndex, setShowFormIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [cnicFile, setCnicFile] = useState(null);
-  const [landFile, setLandFile] = useState(null); 
-  const [showBankDetailsPopup, setShowBankDetailsPopup] = useState(false); 
+  const [cnicFile, setCnicFile] = useState(null); // State to hold CNIC file
+  const [landFile, setLandFile] = useState(null); // State to hold land ownership file
+  const [showBankDetailsPopup, setShowBankDetailsPopup] = useState(false); // Tracks the bank details modal state
   const [bankDetails, setBankDetails] = useState({
     accountNumber: '',
     bankName: '',
@@ -49,7 +69,7 @@ function SubsidyRegulations() {
 
 
   const handleBookmarkToggle = async (regulationId) => {
-    const farmerId = '63f5f4b5b02fda9876543210'; // You need to get the current user's farmer ID
+    const farmerId = '67520e89e097dedca2d7fa57'; // You need to get the current user's farmer ID
   
     if (bookmarkedRegulations.includes(regulationId)) {
       // Remove bookmark
@@ -60,6 +80,17 @@ function SubsidyRegulations() {
       setBookmarkedRegulations([...bookmarkedRegulations, regulationId]);
       await addBookmark(regulationId, farmerId); // Call backend to add bookmark
     }
+  };
+  
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
+
+
+
+
+  const toggleNotifications = () => {
+    setShowNotifications((prev) => !prev);
   };
   
 
@@ -78,9 +109,9 @@ function SubsidyRegulations() {
     }
   
     try {
-      setLoading(true); // Optional: Show a loading indicator
+      setLoading(true); 
   
-      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543210`, { // Replace `userId` with the actual user's ID
+      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/67520e89e097dedca2d7fa57`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,12 +128,12 @@ function SubsidyRegulations() {
       const updatedProfile = await response.json();
       console.log('Bank details updated:', updatedProfile);
       alert('Bank details updated successfully!');
-      setShowBankDetailsPopup(false); // Close the modal
+      setShowBankDetailsPopup(false);
     } catch (error) {
       console.error('Error updating bank details:', error);
       alert('Failed to update bank details. Please try again later.');
     } finally {
-      setLoading(false); // Hide the loading indicator
+      setLoading(false); 
     }
   };
   
@@ -112,7 +143,7 @@ function SubsidyRegulations() {
     if (activeTab === 'subsidies') {
       const filtered = subsidies.filter((subsidy) => {
         const matchesRegion = region ? subsidy.region === region : true;
-        console.log("region",region," subsidy.region   ",subsidy.region,matchesRegion)
+      //  console.log("region",region," subsidy.region   ",subsidy.region,matchesRegion)
         
         return matchesRegion ;
       });
@@ -208,12 +239,12 @@ const handleTypeChange = (value) => {
     const fetchData = async () => {
       try {
         if (activeTab === 'subsidies') {
-          const response = await fetch('https://database-microservice-agrilink.onrender.com/subsidies');
+          const response = await fetch('http://localhost:3000/api/subsidies');
           const data = await response.json();
           setSubsidies(data);
           setFilteredSubsidies(data);
         } else {
-          const response = await fetch('https://database-microservice-agrilink.onrender.com/regulations');
+          const response = await fetch('http://localhost:3000/api/regulations');
           const data = await response.json();
           setRegulations(data);
           setFilteredRegulations(data);
@@ -232,7 +263,7 @@ const handleTypeChange = (value) => {
     const fetchApplications = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:3000/api/subsidyApplications'); 
+        const response = await fetch('http://localhost:3000/api/subsidyapplications'); 
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
@@ -245,9 +276,9 @@ const handleTypeChange = (value) => {
       } finally {
         setLoading(false);
       }
-    };
+   };
 
-    fetchApplications();
+   fetchApplications();
   }, []);
 
   // Log applications when they change
@@ -258,73 +289,93 @@ useEffect(() => {
 }, [applications]);
  
 
-  // Function to handle the subsidy application submission
-  const handleSubmitApplication = async () => {
-    console.log("Selected Subsidy ID:", selectedSubsidyId);
-    if (!cnicFile || !landFile) {
-      alert("Please upload both CNIC and land ownership documents.");
-      return;
-    }
-  
+const handleSubmitApplication = async () => {
+  console.log("Selected Subsidy ID:", selectedSubsidyId);
+  if (!cnicFile || !landFile) {
+    alert("Please upload both CNIC and land ownership documents.");
+    return;
+  }
+
+  const uploadFile = async (file, uploadedBy) => {
     const formData = new FormData();
-    formData.append("cnicDocuments", cnicFile);
-    formData.append("landDocuments", landFile);
-    formData.append("uploadedBy", "63f5f4b5b02fda1234567891"); 
-  
-    try {
-      setLoading(true);
-  
-      // Upload documents
-      const uploadResponse = await fetch('http://localhost:3000/api/upload/upload', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload documents');
-      }
-  
-      const uploadData = await uploadResponse.json();
-      console.log('Documents uploaded:', uploadData);
-  
-      const cnicDocId = uploadData.cnicDocuments[0]._id;
-      const landDocId = uploadData.landDocuments[0]._id;
-      
-      // Create subsidy application with dynamic subsidyId
-      const applicationResponse = await fetch('http://localhost:3000/api/subsidyApplications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          farmer: "63f5f4b5b02fda9876543210", 
-          subsidy: selectedSubsidyId,
-          status: "pending",
-          supportingDocuments: [cnicDocId, landDocId],
-        }),
-      });
-  
-      if (!applicationResponse.ok) {
-        throw new Error('Failed to create subsidy application');
-      }
-  
-      const applicationData = await applicationResponse.json();
-      console.log('Application created:', applicationData);
-  
-      alert('Application submitted successfully!');
-    } catch (err) {
-      console.error(err);
-      setError('Failed to submit application');
-    } finally {
-      setLoading(false);
+    formData.append("file", file); // Matches multer's field name
+    formData.append("uploadedBy", uploadedBy);
+
+    const response = await fetch('http://localhost:3000/api/upload/add', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      throw new Error(errorDetails.error || `Failed to upload document: ${file.name}`);
     }
-  };
-  
-  
+
+    const data = await response.json();
+    console.log(`Document uploaded: ${file.name}`, data);
+    return data.documentId; // Return the document ID
+};
+
+  try {
+    setLoading(true);
+
+    // Upload CNIC and land documents
+    const uploadedBy = "67520df8e097dedca2d7fa51"; // Replace with the actual user ID
+    const cnicDocId = await uploadFile(cnicFile, uploadedBy);
+    const landDocId = await uploadFile(landFile, uploadedBy);
+
+    console.log("CNIC Document ID:", cnicDocId);
+    console.log("Land Document ID:", landDocId);
+
+    // Create subsidy application with dynamic subsidyId
+    const applicationResponse = await fetch('http://localhost:3000/api/subsidyapplications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        farmer: "67520e89e097dedca2d7fa57", 
+        subsidy: selectedSubsidyId,
+        status: "pending",
+        supportingDocuments: [cnicDocId, landDocId],
+        user:"674dd1c19a4dbfe260f137ed",
+        
+      }),
+    });
+
+    if (!applicationResponse.ok) {
+      throw new Error('Failed to create subsidy application');
+    }
+
+    const applicationData = await applicationResponse.json();
+    console.log('Application created:', applicationData);
+
+    alert('Application submitted successfully!');
+  } catch (err) {
+    console.error(err);
+    setError('Failed to submit application');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   return (
     <div className="min-h-screen bg-gray-50">
       
       <main className="container mx-auto py-8 px-4">
+        {/* Notifications Button */}
+        <div className="absolute top-5 right-10">
+            <BellIcon 
+            className="w-6 h-6 text-gray-600 cursor-pointer" 
+            onClick={toggleNotifications}
+          />
+        
+        </div>
+
+        {/* Notifications Popup */}
+        {showNotifications && <Notifications  onClose={toggleNotifications} />}
+
+
       <div className="flex justify-center space-x-4 mb-8">
           <Button
             onClick={() => setActiveTab('subsidies')}
@@ -356,13 +407,13 @@ useEffect(() => {
             Update Your Bank Details
           </Button>
         </div>
-        <div className="text-right mt-4 mb-10">
+        {/* <div className="text-right mt-4 mb-10">
           <Button
             className="bg-green-500 text-white hover:bg-green-800 w-[190px]"
           >
             Show My BookMarks
           </Button>
-        </div>
+        </div> */}
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -408,17 +459,13 @@ useEffect(() => {
 
         </div>
 
-        {/* <Button onClick={applyFilters} className="bg-blue-600 text-white">
-          Apply Filters
-        </Button> */}
-
-
+      
         {activeTab === 'subsidies' ? (
           <>
             <SearchSubsidies subsidies={subsidies} onSearch={setFilteredSubsidies} />
             {filteredSubsidies.map((subsidy, index) => {
             const matchingApplication = applications.find(
-              (app) => app.subsidy === subsidy._id
+              (app) => app.subsidy._id === subsidy._id
             );
 
             return (
@@ -433,13 +480,23 @@ useEffect(() => {
                   <p className="text-lg">Region: {subsidy.region}</p>
                 </div>
                 <div className="mt-4">
-                  {matchingApplication ? (
-                    <Button
-                      className="bg-green-600 hover:bg-green-700"
-                     // onClick={() => alert("View application details here.")} 
-                    >
-                     {matchingApplication.status}
-                    </Button>
+                {matchingApplication ? (
+                  <Button
+                    className={`${
+                      matchingApplication.status === 'rejected'
+                        ? 'bg-red-600 hover:bg-red-700'
+                        : matchingApplication.status === 'approved'
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : matchingApplication.status === 'pending'
+                        ? 'bg-yellow-600 hover:bg-yellow-700'
+                        : ''
+                    }`}
+                    onClick={() => handleButtonClick(matchingApplication._id)}
+                 >
+                    {matchingApplication.status}
+                    
+                  </Button>
+
                   ) : (
                     <>
                       <Button
@@ -614,7 +671,7 @@ useEffect(() => {
                   </form>
                   <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                    onClick={() => setShowFormIndex(null)} // Close modal on click
+                    onClick={() => setShowFormIndex(null)} 
                     aria-label="Close"
                   >
                     &times;
@@ -622,6 +679,12 @@ useEffect(() => {
                 </div>
               </div>
             )}
+
+            <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            applicationId={selectedApplicationId} 
+          />
 
 
 
