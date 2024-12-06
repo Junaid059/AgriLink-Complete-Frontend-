@@ -22,6 +22,32 @@ const LoginSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
+    const adminCredentials = {
+      email: 'admin@gmail.com',
+      password: 'admin123',
+    };
+    const userCredentials = {
+      email: 'user@gmail.com',
+      password: 'user123',
+    };
+
+    if (
+      email === adminCredentials.email &&
+      password === adminCredentials.password
+    ) {
+      localStorage.setItem('role', 'admin');
+      navigate('/admin-panel');
+    } else if (
+      email === userCredentials.email &&
+      password === userCredentials.password
+    ) {
+      localStorage.setItem('role', 'user');
+      navigate('/');
+    } else {
+      alert('Invalid email or password.');
+      navigate('/crop'); //for testing
+
     const endpoint = isLogin
       ? 'http://localhost:3000/api/auth/login'
       : 'http://localhost:3000/api/auth/register';
@@ -59,6 +85,7 @@ const LoginSignup = () => {
     } catch (error) {
       console.error('Error:', error);
       alert('Unable to connect to the server. Please try again later.');
+
     }
   };
   // UseEffect for fetching protected data
