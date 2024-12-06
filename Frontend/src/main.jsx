@@ -17,6 +17,8 @@ import Product from './Comps/marketplace/Product.jsx';
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
+import ChatScreen2 from './Comps/collaboration/Chat2';
+import ChatList from './Comps/collaboration/ChatList';
 import Blog from './Comps/collaboration/blog';
 import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
 import WeatherDashboard from './Comps/weather/WeatherDashboard';
@@ -38,13 +40,12 @@ import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
 import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
-import ChartsPage from './Comps/AdminPanel/AdminDashboard/ChartsPage';
-import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
+import AnalyticsPage from './Comps/AdminPanel/Analytics/AnalyticsPage';
 import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
 import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
 function ProtectedRoute({ children, requiredRole }) {
-  const role = localStorage.getItem('role'); // Get role from localStorage
+  const role = localStorage.getItem('role');
 
   if (!role) {
     return <Navigate to="/signup" />;
@@ -81,6 +82,30 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRole="user">
             <Market />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <Chat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat2',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatScreen2 />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chats',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatList />
           </ProtectedRoute>
         ),
       },
@@ -249,11 +274,10 @@ const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: 'home', element: <AdminDashboard /> },
       { path: 'products', element: <ProductsPage /> },
-      { path: 'charts', element: <ChartsPage /> },
+      { path: 'analytics', element: <AnalyticsPage /> },
       { path: 'gov-dashboard', element: <DashboardPage /> },
       { path: 'management', element: <ManagementPage /> },
       { path: 'supply-chain', element: <Page /> },
-      { path: 'table', element: <TablePage /> },
       { path: 'form', element: <FormPage /> },
     ],
   },
