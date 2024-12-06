@@ -43,6 +43,7 @@ const LoginSignup = () => {
       navigate('/');
     } else {
       alert('Invalid email or password.');
+      navigate('/crop'); //for testing
     }
   };
 
