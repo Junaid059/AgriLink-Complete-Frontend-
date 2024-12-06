@@ -4,14 +4,24 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Footer from '../Footer';
+import { useState } from 'react';
 
 function Market() {
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const handleProductClick = (id) => {
     // Navigate to the product page with the specified id
     navigate(`/marketplace/product/${id}`);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    //  api to get products from ur database
+
+    console.log('Searching for:', searchTerm);
   };
   const products = [
     {
@@ -82,9 +92,38 @@ function Market() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-
       {/* Hero */}
       <div className="relative h-48 bg-[url('/placeholder.svg')] bg-cover bg-center">
+        <div className="relative">
+          <div
+            className="h-48 bg-cover bg-center flex items-center justify-center"
+            style={{
+              backgroundImage: "url('/placeholder.svg?height=192&width=1920')",
+            }}
+          >
+            <h1 className="text-4xl font-bold text-white">Our Shop</h1>
+          </div>
+          <form
+            onSubmit={handleSearch}
+            className="absolute top-4 right-4 flex z-10"
+          >
+            <Input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64 mr-2 bg-white shadow-md focus:ring-2 focus:ring-primary"
+            />
+            <Button
+              type="submit"
+              variant="default"
+              size="icon"
+              className="bg-primary text-white hover:bg-primary/90"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          </form>
+        </div>
         <div className="absolute inset-0 bg-black/50" />
         <div className="container mx-auto px-4">
           <h1 className="relative pt-16 text-center text-3xl font-bold text-white">

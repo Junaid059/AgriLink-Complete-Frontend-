@@ -9,6 +9,8 @@ import {
   Church,
   LayoutGrid,
   Container,
+  UsersRound,
+  UserRoundPen,
 } from 'lucide-react';
 
 function Sidebar() {
@@ -45,20 +47,6 @@ function Sidebar() {
           </Button>
         </NavLink>
         <NavLink
-          to="/admin-panel/charts"
-          className={({ isActive }) =>
-            `w-full block ${
-              isActive
-                ? 'bg-green-500 text-white'
-                : 'hover:bg-green-100 hover:text-green-500'
-            }`
-          }
-        >
-          <Button variant="ghost" className="w-full justify-start">
-            <BarChart2 className="mr-2 h-4 w-4" /> Charts
-          </Button>
-        </NavLink>
-        <NavLink
           to="/admin-panel/gov-dashboard"
           className={({ isActive }) =>
             `w-full block ${
@@ -87,6 +75,34 @@ function Sidebar() {
           </Button>
         </NavLink>
         <NavLink
+          to="/admin-panel/farmer"
+          className={({ isActive }) =>
+            `w-full block ${
+              isActive
+                ? 'bg-green-500 text-white'
+                : 'hover:bg-green-100 hover:text-green-500'
+            }`
+          }
+        >
+          <Button variant="ghost" className="w-full justify-start">
+            <UsersRound className="mr-2 h-4 w-4" /> Farmer
+          </Button>
+        </NavLink>
+        <NavLink
+          to="/admin-panel/farmer-profile"
+          className={({ isActive }) =>
+            `w-full block ${
+              isActive
+                ? 'bg-green-500 text-white'
+                : 'hover:bg-green-100 hover:text-green-500'
+            }`
+          }
+        >
+          <Button variant="ghost" className="w-full justify-start">
+            <UserRoundPen className="mr-2 h-4 w-4" /> Farmer Profile
+          </Button>
+        </NavLink>
+        <NavLink
           to="/admin-panel/supply-chain"
           end
           className={({ isActive }) =>
@@ -102,7 +118,7 @@ function Sidebar() {
           </Button>
         </NavLink>
         <NavLink
-          to="/admin-panel/table"
+          to="/admin-panel/analytics"
           className={({ isActive }) =>
             `w-full block ${
               isActive
@@ -112,7 +128,7 @@ function Sidebar() {
           }
         >
           <Button variant="ghost" className="w-full justify-start">
-            <List className="mr-2 h-4 w-4" /> Table
+            <BarChart2 className="mr-2 h-4 w-4" /> Market Analytics
           </Button>
         </NavLink>
         <NavLink
