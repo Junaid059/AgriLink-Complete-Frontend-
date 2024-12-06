@@ -16,7 +16,7 @@ const Notifications = ({ onClose }) => {
           throw new Error('Failed to fetch notifications');
         }
         const data = await response.json();
-        const unreadNotifications = data.filter((notification) => !notification.isRead && notification.user=="63f5f4b5b02fda1234567890");
+        const unreadNotifications = data.filter((notification) => !notification.isRead && notification.user=="67520df8e097dedca2d7fa51");
         setNotifications(unreadNotifications);
         
       } catch (error) {

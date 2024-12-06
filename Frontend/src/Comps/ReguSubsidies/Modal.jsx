@@ -68,6 +68,9 @@ const Modal = ({ isOpen, onClose, applicationId }) => {
               <p><strong>Region:</strong> {application.subsidy?.region || 'Not available'}</p>
               <p><strong>Amount:</strong> ${application.subsidy?.amount || 'Not available'}</p>
               <p><strong>Description:</strong> {application.subsidy?.description || 'Not available'}</p>
+              <p>
+                <strong>Rejection Reason:</strong> {application.rejectionReason ? application.rejectionReason : 'No Rejection'}
+              </p>
             </div>
 
             {/* <div>

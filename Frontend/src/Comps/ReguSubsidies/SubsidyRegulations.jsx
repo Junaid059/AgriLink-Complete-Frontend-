@@ -69,7 +69,7 @@ function SubsidyRegulations() {
 
 
   const handleBookmarkToggle = async (regulationId) => {
-    const farmerId = '63f5f4b5b02fda9876543210'; // You need to get the current user's farmer ID
+    const farmerId = '67520e89e097dedca2d7fa57'; // You need to get the current user's farmer ID
   
     if (bookmarkedRegulations.includes(regulationId)) {
       // Remove bookmark
@@ -109,9 +109,9 @@ function SubsidyRegulations() {
     }
   
     try {
-      setLoading(true); // Optional: Show a loading indicator
+      setLoading(true); 
   
-      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/63f5f4b5b02fda9876543210`, { // Replace `userId` with the actual user's ID
+      const response = await fetch(`https://database-microservice-agrilink.onrender.com/farmerProfiles/67520e89e097dedca2d7fa57`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -239,12 +239,12 @@ const handleTypeChange = (value) => {
     const fetchData = async () => {
       try {
         if (activeTab === 'subsidies') {
-          const response = await fetch('https://database-microservice-agrilink.onrender.com/subsidies');
+          const response = await fetch('http://localhost:3000/api/subsidies');
           const data = await response.json();
           setSubsidies(data);
           setFilteredSubsidies(data);
         } else {
-          const response = await fetch('https://database-microservice-agrilink.onrender.com/regulations');
+          const response = await fetch('http://localhost:3000/api/regulations');
           const data = await response.json();
           setRegulations(data);
           setFilteredRegulations(data);
@@ -276,9 +276,9 @@ const handleTypeChange = (value) => {
       } finally {
         setLoading(false);
       }
-    };
+   };
 
-    fetchApplications();
+   fetchApplications();
   }, []);
 
   // Log applications when they change
@@ -320,7 +320,7 @@ const handleSubmitApplication = async () => {
     setLoading(true);
 
     // Upload CNIC and land documents
-    const uploadedBy = "63f5f4b5b02fda1234567891"; // Replace with the actual user ID
+    const uploadedBy = "67520df8e097dedca2d7fa51"; // Replace with the actual user ID
     const cnicDocId = await uploadFile(cnicFile, uploadedBy);
     const landDocId = await uploadFile(landFile, uploadedBy);
 
@@ -332,11 +332,11 @@ const handleSubmitApplication = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        farmer: "63f5f4b5b02fda9876543210", // Replace with actual farmer ID
+        farmer: "67520e89e097dedca2d7fa57", 
         subsidy: selectedSubsidyId,
         status: "pending",
         supportingDocuments: [cnicDocId, landDocId],
-        user:"674dd1c19a4dbfe260f137ef",
+        user:"67520df8e097dedca2d7fa51",
         
       }),
     });
