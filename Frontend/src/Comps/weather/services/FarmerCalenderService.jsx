@@ -29,7 +29,9 @@ const FarmerCalenderService = {
 
   getWeatherData: async (city) => {
     try {
-      const response = await axios.get(`${BASE_URL}/forecast/3-day?q=${city}`);
+      // const response = await axios.get(`${BASE_URL}/forecast/3-day?q=${city}`);
+      const response = await axios.get(`${BASE_URL}/history/historical-weather-city?city=${city}`);
+      console.log('🚀 ~ getWeatherData ~ response', response);
       return handleResponse(response);
     } catch (error) {
       return { error: error };
