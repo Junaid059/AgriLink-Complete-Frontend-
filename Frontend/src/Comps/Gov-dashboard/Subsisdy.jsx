@@ -37,11 +37,8 @@ function SubsidyManagement() {
 
   // Fetch subsidies when the component mounts
   useEffect(() => {
-    
-
     fetchSubsidies();
   }, []);
-
 
   const fetchSubsidies = async () => {
     try {
@@ -73,7 +70,6 @@ function SubsidyManagement() {
       let response;
       if (editSubsidyId) {
         // Edit existing subsidy
-        console.log ('id iddd',editSubsidyId)
         response = await fetch(`https://database-microservice-agrilink.onrender.com/subsidies/${editSubsidyId}`, {
           method: 'PUT',
           headers: {
@@ -94,21 +90,16 @@ function SubsidyManagement() {
 
       if (response.ok) {
         const updatedSubsidy = await response.json();
-        if (editSubsidyId) {
-            fetchSubsidies();
 
-        //   // If editing, update the state with the updated subsidy
-        //   setSubsidies((prevSubsidies) =>
-        //     prevSubsidies.map((subsidy) =>
-        //       subsidy.id === editSubsidyId ? updatedSubsidy : subsidy
-        //     )
-        //   );
-        } else {
-            fetchSubsidies();
+        // Send notification to user after adding or updating subsidy
+        const notificationMessage = editSubsidyId
+          ? `Exisiting subsidy "${updatedSubsidy.title}" has been updated.`
+          : `New subsidy "${updatedSubsidy.title}" has been created.`;
 
-        //   // If adding, add the new subsidy to the list
-        //   setSubsidies((prevSubsidies) => [...prevSubsidies, updatedSubsidy]);
-        }
+        // Send the notification
+        await sendNotification(notificationMessage);
+
+        fetchSubsidies(); // Refresh subsidies list
         setOpen(false); // Close the modal after saving
         setEditSubsidyId(null); // Reset the edit state
       } else {
@@ -116,6 +107,30 @@ function SubsidyManagement() {
       }
     } catch (error) {
       console.error('Error saving subsidy:', error);
+    }
+  };
+
+  // Send notification
+  const sendNotification = async (message) => {
+    try {
+      const response = await fetch('https://database-microservice-agrilink.onrender.com/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: '6751be027f4de71db840ea69', // Replace with actual user ID
+          type: 'other', // Notification type
+          message,
+          isRead: false,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send notification:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error);
     }
   };
 
@@ -129,9 +144,7 @@ function SubsidyManagement() {
         });
 
         if (response.ok) {
-            fetchSubsidies();
-
-          //setSubsidies((prevSubsidies) => prevSubsidies.filter((subsidy) => subsidy.id !== subsidyId));
+          fetchSubsidies();
         } else {
           console.error('Error deleting subsidy:', response.statusText);
         }
@@ -184,7 +197,7 @@ function SubsidyManagement() {
                 <TableCell>{subsidy.title}</TableCell>
                 <TableCell>{subsidy.description}</TableCell>
                 <TableCell>{subsidy.region}</TableCell>
-                <TableCell>{subsidy.applicationDeadline}</TableCell>
+                <TableCell>{new Date(subsidy.applicationDeadline).toISOString().split('T')[0]}</TableCell>
                 <TableCell>{subsidy.amount}</TableCell>
                 <TableCell>{subsidy.category}</TableCell>
                 <TableCell>
@@ -270,10 +283,21 @@ function SubsidyManagement() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Agriculture">Agriculture</SelectItem>
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Health">Health</SelectItem>
-                </SelectContent>
+                    <SelectItem value="cropSubsidies">Crop Subsidies</SelectItem>
+                    <SelectItem value="fertilizerSubsidies">Fertilizer Subsidies</SelectItem>
+                    <SelectItem value="irrigationSupport">Irrigation Support</SelectItem>
+                    <SelectItem value="livestockDairyFarming">Livestock and Dairy Farming</SelectItem>
+                    <SelectItem value="agriTechInnovations">Agri-Tech Innovations</SelectItem>
+                    <SelectItem value="seedSubsidies">Seed Subsidies</SelectItem>
+                    <SelectItem value="farmMachinerySubsidies">Farm Machinery Subsidies</SelectItem>
+                    <SelectItem value="waterConservation">Water Conservation</SelectItem>
+                    <SelectItem value="agriInsurance">Agri-Insurance</SelectItem>
+                    <SelectItem value="organicFarming">Organic Farming</SelectItem>
+                    <SelectItem value="researchAndDevelopment">Research and Development</SelectItem>
+                    <SelectItem value="pesticidesDiseaseControl">Pesticides and Disease Control</SelectItem>
+                    <SelectItem value="soilHealthConservation">Soil Health and Conservation</SelectItem>
+                    </SelectContent>
+
               </Select>
             </div>
 
