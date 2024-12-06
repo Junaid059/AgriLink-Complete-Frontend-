@@ -17,6 +17,8 @@ import Product from './Comps/marketplace/Product.jsx';
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
+import ChatScreen2 from './Comps/collaboration/Chat2';
+import ChatList from './Comps/collaboration/ChatList';
 import Blog from './Comps/collaboration/blog';
 import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
 import WeatherDashboard from './Comps/weather/WeatherDashboard';
@@ -81,6 +83,30 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRole="user">
             <Market />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <Chat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat2',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatScreen2 />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chats',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatList />
           </ProtectedRoute>
         ),
       },
