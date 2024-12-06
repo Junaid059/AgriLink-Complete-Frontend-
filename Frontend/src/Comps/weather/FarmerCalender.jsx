@@ -40,6 +40,7 @@ import { Check, X, ChevronUp, ChevronDown } from 'lucide-react';
 import CropCalendar from './components/CropCalendar';
 import FarmerCalenderService from './services/FarmerCalenderService';
 import { set } from 'date-fns';
+import Footer from '../Footer';
 
 function FarmerCalendar() {
   const [data, setData] = useState();
@@ -878,8 +879,8 @@ function FarmerCalendar() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1 container mx-auto px-4 py-8">
+    <div className="flex flex-col ">
+      <main className="flex-1 container mx-auto min-h-screen px-4 py-8">
         <div className="space-y-6">
           <h1 className="text-2xl font-bold">Farming Calendar</h1>
 
@@ -1020,6 +1021,8 @@ function FarmerCalendar() {
           {showActivityAlerts && <ActivityAlertsDisplay />}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
