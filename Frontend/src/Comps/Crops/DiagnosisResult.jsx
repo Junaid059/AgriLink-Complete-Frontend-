@@ -32,15 +32,15 @@ function DiagnosisResult({ diagnosis }) {
                 Predicted Disease(s)
               </h3>
               <div className="flex gap-2">
-                {diagnosis.diseases.map((disease) => (
+                
                   <Badge
-                    key={disease}
+                    key={diagnosis.prediction}
                     variant="outline"
                     className="text-yellow-600 border-yellow-600"
                   >
-                    {disease}
+                    {diagnosis.prediction}
                   </Badge>
-                ))}
+              
               </div>
             </div>
 
@@ -49,7 +49,7 @@ function DiagnosisResult({ diagnosis }) {
                 Suggestion for Corrective Measures
               </h3>
               <ul className="list-disc pl-4 space-y-1 text-gray-700">
-                {diagnosis.measures.map((measure) => (
+                {diagnosis.suggestions.map((measure) => (
                   <li key={measure}>{measure}</li>
                 ))}
               </ul>
@@ -72,7 +72,7 @@ function DiagnosisResult({ diagnosis }) {
           </>
         )}
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <h3 className="font-semibold text-green-700">
             Weather Conditions Output
           </h3>
@@ -80,7 +80,7 @@ function DiagnosisResult({ diagnosis }) {
             <Cloud className="inline-block mr-2 h-4 w-4" />
             {diagnosis.weather.condition}: {diagnosis.weather.recommendation}
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );

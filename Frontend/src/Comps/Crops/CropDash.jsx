@@ -6,23 +6,24 @@ import ChatRecommendation from './ChatRecomendation';
 function CropDash() {
   const [diagnosisResult, setDiagnosisResult] = useState(null);
 
-  const handleDiagnosisSubmit = (formData) => {
-    setTimeout(() => {
-      setDiagnosisResult({
-        status: 'Unhealthy',
-        diseases: ['Leaf Blight', 'Root Rot'],
-        measures: [
-          'Apply fungicide',
-          'Improve drainage',
-          'Reduce irrigation frequency',
-        ],
-        pesticides: ['Fungicide X', 'Organic Treatment Y'],
-        weather: {
-          condition: 'Rain expected',
-          recommendation: 'Apply treatment within 24 hours',
-        },
-      });
-    }, 1500);
+  const handleDiagnosisSubmit = (result) => {
+    // setTimeout(() => {
+    //   setDiagnosisResult({
+    //     status: 'Unhealthy',
+    //     diseases: ['Leaf Blight', 'Root Rot'],
+    //     measures: [
+    //       'Apply fungicide',
+    //       'Improve drainage',
+    //       'Reduce irrigation frequency',
+    //     ],
+    //     pesticides: ['Fungicide X', 'Organic Treatment Y'],
+    //     weather: {
+    //       condition: 'Rain expected',
+    //       recommendation: 'Apply treatment within 24 hours',
+    //     },
+    //   });
+    // }, 1500);
+    setDiagnosisResult(result);
   };
 
   return (
