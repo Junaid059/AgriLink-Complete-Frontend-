@@ -240,6 +240,7 @@ const handleTypeChange = (value) => {
       try {
         if (activeTab === 'subsidies') {
           const response = await fetch('http://localhost:3000/api/subsidies');
+          
           const data = await response.json();
           setSubsidies(data);
           setFilteredSubsidies(data);
