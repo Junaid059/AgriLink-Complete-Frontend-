@@ -13,6 +13,8 @@ const WeatherIcon = () => {
 }
 
 
+
+
 const ChatRecommendation = () => {
   const [crop, setCrop] = useState('');
   const [disease, setDisease] = useState('');
@@ -20,8 +22,26 @@ const ChatRecommendation = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [weatherRecommendations, setWeatherRecommendations] = useState(null);
+  const [city, setCity] = useState('');
 
   const BASE_URL = "http://localhost:5000"; // for chat recommendation microservice
+  
+  const getCityFromGeolocation = () => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
+  };
+
 
   const getDummyWeatherData = () => {
     const variations = [
@@ -126,6 +146,35 @@ const ChatRecommendation = () => {
     setLoading(true);
     setError('');
 
+    // let weatherData;
+    // if (city !== "") {
+    //   // Fetch weather data from the API using the city input
+    //   const weatherResponse = await fetch(
+    //     `https://weather-and-environmental-data-service.onrender.com/forecast/3-day?q=${city}`
+    //   );
+
+    //   if (!weatherResponse.ok) {
+    //     throw new Error('Failed to fetch weather data');
+    //   }
+
+    //   weatherData = await weatherResponse.json();
+    // } else {
+    //   {
+    //     try {
+    //       const { latitude, longitude } = await getCityFromGeolocation();
+    //       const cityName = await getCityName(latitude, longitude);
+
+    //       weatherResponse = await fetch(
+    //         `https://weather-and-environmental-data-service.onrender.com/forecast/3-day?q=${cityName}`
+    //       );
+    //       weatherData = await weatherResponse.json();
+    //     } catch (err) {
+    //       setError(err.message);
+    //     }
+
+    //   }
+
+
     const weatherData = getDummyWeatherData();
 
     try {
@@ -207,6 +256,16 @@ const ChatRecommendation = () => {
             placeholder="Enter diseaase name"
             value={disease}
             onChange={(e) => setDisease(e.target.value)}
+            required
+          />
+           <Label htmlFor="city" className="text-green-700">
+            City
+          </Label>
+          <Input
+            type="text"
+            placeholder="Enter city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
             required
           />
           <Button
