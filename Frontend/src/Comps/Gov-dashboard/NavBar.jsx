@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { BellIcon, CheckCircleIcon } from 'lucide-react';
+import { BellIcon, CheckCircleIcon, User } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const Navbar = () => {
@@ -12,20 +12,24 @@ const Navbar = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`https://database-microservice-agrilink.onrender.com/notifications/${userId}`);
+        const response = await fetch(`https://database-microservice-agrilink.onrender.com/notifications`);
         if (!response.ok) {
           throw new Error('Failed to fetch notifications');
         }
         const data = await response.json();
-      
-        setNotifications(data);
+        // Filter notifications for the current user
+        const userNotifications = data.filter(notification => notification.user === userId);
+        console.log("Fetched Notifications:", userNotifications); // Add this line
+
+        setNotifications(userNotifications);
+        
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchNotifications();
-  }, [userId]);
+  }, []);
 
   const toggleNotifications = () => {
     setIsNotificationOpen(!isNotificationOpen);
@@ -46,12 +50,12 @@ const Navbar = () => {
         throw new Error('Failed to update notification status');
       }
 
-      // Update local state to reflect the change
+     
+      // Remove the notification from the local state
       setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) =>
-          notification._id === notificationId ? { ...notification, isRead: true } : notification
-        )
+        prevNotifications.filter((notification) => notification._id !== notificationId)
       );
+      
     } catch (err) {
       console.error('Error marking notification as read:', err);
     }

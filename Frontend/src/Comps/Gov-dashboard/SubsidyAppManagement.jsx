@@ -36,7 +36,19 @@ function SubsidyManagement() {
   
   const handleViewDocument = (document) => {
     console.log ('docc',document)
+
+
     setSelectedDocument(document);
+
+    // Convert fileData to a Base64 string
+  const uint8Array = new Uint8Array(document.fileData.data);
+  const binaryString = Array.from(uint8Array)
+    .map((byte) => String.fromCharCode(byte))
+    .join('');
+  const base64String = btoa(binaryString);
+
+  console.log('Base64 String:', base64String);
+
     setIsDocumentModalOpen(true);
   };
   const handleViewDetails = (subsidy) => {
@@ -256,12 +268,20 @@ function SubsidyManagement() {
                 ✕
               </button>
             </div>
-            (
-              <iframe
-                src={`data:application/pdf;base64,${selectedDocument.fileData.toBase64String()}`}
-
-              />
-            )
+            
+            <div className="flex-1 overflow-hidden">
+      <iframe
+        src={`data:application/pdf;base64,${btoa(
+          Array.from(new Uint8Array(selectedDocument.fileData.data))
+            .map((byte) => String.fromCharCode(byte))
+            .join('')
+        )}`}
+        title={selectedDocument.metadata.originalName}
+        className="w-full h-full border rounded"
+        style={{ minHeight: '80vh' }} // Ensure a minimum height for the iframe
+      />
+    </div>
+            
           
           </div>
         </div>
