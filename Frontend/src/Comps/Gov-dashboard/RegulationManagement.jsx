@@ -27,19 +27,17 @@ import {
 function RegulationManagement() {
   const [regulations, setRegulations] = useState([]);
   const [open, setOpen] = useState(false);
-  const [editRegulationId, setEditRegulationId] = useState(null); // Track the ID for edit
+  const [editRegulationId, setEditRegulationId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    createdDate: '',
-    updatedDate: '',
     effectiveDate: '',
     category: '',
+    type: 'regulatory'
   });
 
   const baseURL = 'https://database-microservice-agrilink.onrender.com/regulations';
 
-  // Fetch regulations on component mount
   useEffect(() => {
     fetchRegulations();
   }, []);
@@ -58,12 +56,16 @@ function RegulationManagement() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleCategoryChange = (value) => {
-    setFormData({ ...formData, category: value });
-  };
 
   const handleSaveRegulation = async (e) => {
     e.preventDefault();
+
+    if (!formData.category) {
+      console.error('Category is required.');
+      alert('Please select a category before saving.');
+      return;
+  }
+
     try {
       const method = editRegulationId ? 'PUT' : 'POST';
       const url = editRegulationId ? `${baseURL}/${editRegulationId}` : baseURL;
@@ -77,17 +79,63 @@ function RegulationManagement() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save regulation');
+        const errorText = await response.text();
+        throw new Error(`Failed to save regulation: ${errorText}`);
       }
 
-      // Reset state and refetch data
+
+      if ( method === 'POST')
+      {
+       // Notify the user
+       const notificationResponse = await fetch(`https://database-microservice-agrilink.onrender.com/notifications`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user: `6751be027f4de71db840ea69`, // Assuming the farmer's user ID is accessible
+            type: `new_regulation`,
+            message: `New regulation has been uploaded! Check it out.`,
+            isRead: false,
+        }),
+    });
+
+    if (!notificationResponse.ok) {
+        throw new Error('Failed to send notification');
+    }
+
+  }
+
+  else
+  {
+
+    // Notify the user
+    const notificationResponse = await fetch(`https://database-microservice-agrilink.onrender.com/notifications`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user: `6751be027f4de71db840ea69`, // Assuming the farmer's user ID is accessible
+        type: `new_regulation`,
+          message: `Exisisting regulation has been updated! Check it out.`,
+          isRead: false,
+      }),
+  });
+
+  if (!notificationResponse.ok) {
+      throw new Error('Failed to send notification');
+  }
+
+
+  }
+
       setFormData({
         title: '',
         description: '',
-        createdDate: '',
-        updatedDate: '',
         effectiveDate: '',
         category: '',
+        type: 'regulatory'
       });
       setEditRegulationId(null);
       setOpen(false);
@@ -118,10 +166,9 @@ function RegulationManagement() {
     setFormData({
       title: regulation.title,
       description: regulation.description,
-      createdDate: regulation.createdDate,
-      updatedDate: regulation.updatedDate,
       effectiveDate: regulation.effectiveDate,
       category: regulation.category,
+      type: regulation.type || 'regulatory'
     });
     setOpen(true);
   };
@@ -136,10 +183,9 @@ function RegulationManagement() {
             setFormData({
               title: '',
               description: '',
-              createdDate: '',
-              updatedDate: '',
               effectiveDate: '',
               category: '',
+              type: 'regulatory'
             });
             setOpen(true);
           }}
@@ -155,8 +201,8 @@ function RegulationManagement() {
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Created Date</TableHead>
-              <TableHead>Updated Date</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead>Updated At</TableHead>
               <TableHead>Effective Date</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Actions</TableHead>
@@ -167,9 +213,15 @@ function RegulationManagement() {
               <TableRow key={regulation._id}>
                 <TableCell>{regulation.title}</TableCell>
                 <TableCell>{regulation.description}</TableCell>
-                <TableCell>{regulation.createdDate}</TableCell>
-                <TableCell>{regulation.updatedDate}</TableCell>
-                <TableCell>{regulation.effectiveDate}</TableCell>
+                <TableCell>
+                  {new Date(regulation.createdAt).toISOString().split('T')[0]}
+                </TableCell>
+                <TableCell>              
+                  {new Date(regulation.updatedAt).toISOString().split('T')[0]}
+                </TableCell>
+                <TableCell>
+                  {new Date(regulation.effectiveDate).toISOString().split('T')[0]}
+                </TableCell>               
                 <TableCell>{regulation.category}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
@@ -217,24 +269,6 @@ function RegulationManagement() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="createdDate">Created Date</Label>
-              <Input
-                id="createdDate"
-                type="date"
-                value={formData.createdDate}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="updatedDate">Updated Date</Label>
-              <Input
-                id="updatedDate"
-                type="date"
-                value={formData.updatedDate}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="effectiveDate">Effective Date</Label>
               <Input
                 id="effectiveDate"
@@ -245,18 +279,24 @@ function RegulationManagement() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
+              
               <Select
-                onValueChange={handleCategoryChange}
-                value={formData.category}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pesticide">Pesticide</SelectItem>
-                  <SelectItem value="Land Use">Land Use</SelectItem>
-                </SelectContent>
-              </Select>
+  onValueChange={(value) => setFormData(prevData => ({
+    ...prevData, 
+    category: value
+  }))}
+  value={formData.category}
+>
+  <SelectTrigger>
+    <SelectValue placeholder="Select category" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="pesticide">Pesticide</SelectItem>
+    <SelectItem value="land_management">Land Use</SelectItem>
+    <SelectItem value="crop_protection">Crop Protection</SelectItem>
+    <SelectItem value="other">Other</SelectItem>
+  </SelectContent>
+</Select>
             </div>
             <div className="flex gap-2 justify-end">
               <Button

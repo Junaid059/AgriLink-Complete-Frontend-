@@ -16,7 +16,7 @@ function SubsidyManagement() {
   useEffect(() => {
     const fetchSubsidies = async () => {
       try {
-        const response = await fetch('http://localhost:4000/subsidyApplications');
+        const response = await fetch('http://localhost:3000/api/subsidyapplications');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -32,6 +32,7 @@ function SubsidyManagement() {
   
     fetchSubsidies();
   }, []);
+
   
   const handleViewDocument = (document) => {
     console.log ('docc',document)
@@ -40,7 +41,11 @@ function SubsidyManagement() {
   };
   const handleViewDetails = (subsidy) => {
     console.log ('sub',subsidy)
+
     setSelectedSubsidy(subsidy);
+
+    console.log ('user id', selectedSubsidy.farmer?.user?._id)
+
     setIsDetailModalOpen(true);
   };
 
@@ -52,38 +57,69 @@ function SubsidyManagement() {
 
   const handleConfirmAction = async () => {
     try {
-      console.log ('iddd is ',selectedSubsidy)
-      const newStatus = actionType === 'approve' ? 'approved' : 'rejected';
-      const response = await fetch(`https://database-microservice-agrilink.onrender.com/subsidyApplications/${selectedSubsidy._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          ...(actionType === 'reject' && { rejectionReason })
-        })
-      });
+        console.log('iddd is ', selectedSubsidy);
+        const newStatus = actionType === 'approve' ? 'approved' : 'rejected';
 
-      if (!response.ok) {
-        throw new Error('Failed to update subsidy status');
-      }
+        // Update the subsidy status
+        const response = await fetch(`https://database-microservice-agrilink.onrender.com/subsidyApplications/${selectedSubsidy._id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: newStatus,
+                ...(actionType === 'reject' && { rejectionReason }),
+            }),
+        });
 
-      const updatedSubsidies = subsidies.map(subsidy => 
-        subsidy._id === selectedSubsidy._id 
-          ? { ...subsidy, status: newStatus } 
-          : subsidy
-      );
+        if (!response.ok) {
+            throw new Error('Failed to update subsidy status');
+        }
 
-      setSubsidies(updatedSubsidies);
-      setIsConfirmationDialogOpen(false);
-      setRejectionReason('');
-      setSelectedSubsidy(null);
+        console.log('user id', selectedSubsidy.farmer?.user?._id);
+        
+        // Constructing the message based on action type
+        const message = actionType === 'approve' 
+            ? `Your subsidy application for "${selectedSubsidy.subsidy.title}" has been approved.Further details will be emailed to you soon`
+            : `Your subsidy application for "${selectedSubsidy.subsidy.title}" has been rejected. Reason: ${rejectionReason || 'No reason provided'}.`;
+
+        // Notify the user
+        const notificationResponse = await fetch(`https://database-microservice-agrilink.onrender.com/notifications`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user: selectedSubsidy.farmer?.user?._id, // Assuming the farmer's user ID is accessible
+                type: `application_status`,
+                message: message,
+                isRead: false,
+            }),
+        });
+
+        if (!notificationResponse.ok) {
+            throw new Error('Failed to send notification');
+        }
+
+        // Update the local state
+        const updatedSubsidies = subsidies.map((subsidy) =>
+            subsidy._id === selectedSubsidy._id
+                ? { ...subsidy, status: newStatus }
+                : subsidy
+        );
+
+        setSubsidies(updatedSubsidies);
+        setIsConfirmationDialogOpen(false);
+        setRejectionReason('');
+        setSelectedSubsidy(null);
+
+        alert('Action completed successfully, and notification sent!');
     } catch (err) {
-      console.error('Failed to update subsidy status', err);
-      alert('Failed to update subsidy status');
+        console.error('Failed to update subsidy status or send notification', err);
+        alert('Failed to update subsidy status or send notification');
     }
-  };
+};
+
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -187,8 +223,8 @@ function SubsidyManagement() {
                 <p><strong>Status:</strong> {selectedSubsidy.status}</p>
               </div>
               <div>
-                <p><strong>Farmer Location:</strong> {selectedSubsidy.farmer?.farmDetails?.location || 'Unknown'}</p>
-                <p><strong>Farm Size:</strong> {selectedSubsidy.farmer?.farmDetails?.size} </p>
+                <p><strong>Farmer Location:</strong> {selectedSubsidy.farmer?.farmDetails?.farmLocation.address || 'Unknown'}</p>
+                <p><strong>Farm Size:</strong> {selectedSubsidy.farmer?.farmDetails?.farmSize} </p>
               </div>
               <div className="col-span-2">
                 <p><strong>Subsidy Title:</strong> {selectedSubsidy.subsidy?.title}</p>
@@ -220,19 +256,12 @@ function SubsidyManagement() {
                 ✕
               </button>
             </div>
-            {['jpg', 'png' ].includes(selectedDocument.fileType) ? (
-              <img 
-                src={selectedDocument.fileUrl} 
-                alt={selectedDocument.metadata.originalName} 
-                className="max-w-full max-h-[70vh] mx-auto object-contain"
+            (
+              <iframe
+                src={`data:application/pdf;base64,${selectedDocument.fileData.toBase64String()}`}
+
               />
-            ) : (
-              <iframe 
-                src={selectedDocument.fileUrl} 
-                className="w-full h-[70vh] border rounded"
-                title={selectedDocument.metadata.originalName}
-              />
-            )}
+            )
           
           </div>
         </div>
