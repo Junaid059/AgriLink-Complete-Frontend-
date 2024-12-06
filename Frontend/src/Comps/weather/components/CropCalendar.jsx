@@ -7,94 +7,81 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Calendar, Sprout } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const CropCalendar = ({ region, crop }) => {
+const CropCalendar = ({ region, crop, sowingPeriod, harvestPeriod }) => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   return (
-    <div>
-      <div className="flex justify-between p-4 w-full">
-        <div className='flex w-full'>
-          <h2 className="text-lg font-semibold">{region} // Region</h2>
-        </div>
-
-        <div className="flex w-full gap-4 justify-end">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-600"></div>
-            <span className="text-sm text-gray-600">Planting Season</span>
+    <Card className="mt-6 border-t-4 border-t-blue-500">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-6 h-6 text-blue-500" />
+            <div>
+              <CardTitle>Crop Calendar</CardTitle>
+              <CardDescription>{region}</CardDescription>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500"></div>
-            <span className="text-sm text-gray-600">Harvesting Season</span>
+          <div className="flex gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-blue-500 rounded"></div>
+              <span className="text-sm">Planting Season</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <span className="text-sm">Harvesting Season</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="overflow-x-auto p-4">
-        <Table className="table table-auto w-full border-collapse border border-gray-300">
-          <TableHeader className="bg-gray-100">
-            <TableRow>
-              <TableHead className="border border-gray-300 px-2 py-1 w-24">
-                Crop
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Jan
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Feb
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Mar
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Apr
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                May
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Jun
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Jul
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Aug
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Sep
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Oct
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Nov
-              </TableHead>
-              <TableHead className="border border-gray-300 px-2 py-1 w-12">
-                Dec
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="border border-gray-300 px-4 py-4 w-48">
-                <span>{crop}</span>
-              </TableCell>
-              {Array.from({ length: 12 }).map((_, index) => (
-                <TableCell
-                  key={index}
-                  className="border border-gray-300 p-0 w-24 h-24 relative"
-                >
-                  {index >= 4 && index <= 5 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-blue-600" />
-                  )}
-                  {index >= 10 && (
-                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-green-500" />
-                  )}
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-lg border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50">
+                <TableHead className="w-48 font-semibold">Crop</TableHead>
+                {months.map(month => (
+                  <TableHead key={month} className="text-center font-semibold p-0 w-16">
+                    {month}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium bg-slate-50">
+                  <div className="flex items-center space-x-2">
+                    <Sprout className="w-5 h-5 text-green-500" />
+                    <span>{crop}</span>
+                  </div>
                 </TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <TableCell
+                    key={index}
+                    className="p-0 h-16 relative"
+                  >
+                    <div className="flex flex-col h-full">
+                      {index >= harvestPeriod.start && index <= harvestPeriod.end && (
+                        <div className="h-1/2 bg-green-500/20">
+                          <div className="h-1 bg-green-500" />
+                        </div>
+                      )}
+                      {index >= sowingPeriod.start && index <= sowingPeriod.end && (
+                        <div className="h-1/2 mt-auto bg-blue-500/20">
+                          <div className="h-1 bg-blue-500" />
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
