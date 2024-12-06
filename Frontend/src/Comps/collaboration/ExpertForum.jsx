@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import axios from 'axios';
 import {
   Search,
   X,
@@ -16,6 +17,8 @@ import {
   Send,
 } from 'lucide-react';
 import Footer from '../Footer';
+const API_BASE_URL = 'http://localhost:3000/api/discussions';
+const TEMP_USER_ID = '674dd1c19a4dbfe260f137ed';
 
 function ExpertForum() {
   const [tags, setTags] = useState([
@@ -24,51 +27,30 @@ function ExpertForum() {
     'help-question',
   ]);
   const [newTag, setNewTag] = useState('');
-  const [postContent, setPostContent] = useState('');
+  const [postTitle, setPostTitle] = useState('');
+  const [postDescription, setPostDescription] = useState('');
   const [file, setFile] = useState(null);
-  const [newComment, setNewComment] = useState('');
+  const [commentInputs, setCommentInputs] = useState({});
   const [replyingTo, setReplyingTo] = useState(null);
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: 'Mikey Jonah',
-      avatar: '/placeholder.svg',
-      title: 'Discussion Title Here',
-      content:
-        'That IPO will be a game-changer. Land it in the region, keep it lean. This proposal is a win-win situation, which will cause a stellar paradigm shift and produce a multi-fold increase in deliverables.',
-      tags: ['study-group', 'share-insight'],
-      timestamp: '2d ago',
-      replies: 2,
-      views: 875,
-      comments: [
-        {
-          id: 1,
-          author: 'Jane Doe',
-          avatar: '/placeholder.svg',
-          content: 'Great insight! I completely agree with your perspective.',
-          timestamp: '1d ago',
-          replies: [],
-        },
-        {
-          id: 2,
-          author: 'John Smith',
-          avatar: '/placeholder.svg',
-          content:
-            'I have a question about this. Can you elaborate more on the paradigm shift?',
-          timestamp: '1d ago',
-          replies: [
-            {
-              id: 1,
-              author: 'Mikey Jonah',
-              avatar: '/placeholder.svg',
-              content: 'The paradigm shift refers to...',
-              timestamp: '1d ago',
-            },
-          ],
-        },
-      ],
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get(API_BASE_URL);
+      setPosts(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setError('Failed to load posts');
+      setLoading(false);
+    }
+  };
 
   const handleAddTag = () => {
     if (newTag.trim() && !tags.includes(newTag)) {
@@ -81,89 +63,111 @@ function ExpertForum() {
     setFile(e.target.files[0] || null);
   };
 
-  const handlePostSubmit = (e) => {
+  const handlePostSubmit = async (e) => {
     e.preventDefault();
-    if (postContent.trim()) {
-      const newPost = {
-        id: posts.length + 1,
-        author: 'Current User',
-        avatar: '/placeholder.svg',
-        title: postContent.split('\n')[0] || 'Untitled',
-        content: postContent,
-        tags,
-        timestamp: 'Just now',
-        replies: 0,
-        views: 0,
-        comments: [],
-      };
-      setPosts([newPost, ...posts]);
-      setPostContent('');
-      setTags([]);
-      setFile(null);
+    if (postTitle.trim() && postDescription.trim()) {
+      try {
+        const postData = {
+          title: postTitle.trim(),
+          description: postDescription.trim(),
+          status: 'active',
+          author: TEMP_USER_ID
+        };
+
+        const response = await axios.post(API_BASE_URL, postData);
+        setPosts([response.data, ...posts]);
+        setPostTitle('');
+        setPostDescription('');
+        setTags([]);
+        setFile(null);
+      } catch (error) {
+        console.error('Error creating post:', error);
+        alert('Failed to create post');
+      }
     }
   };
 
-  const handleCommentSubmit = (e, postId) => {
+  const handleCommentInputChange = (forumId, value) => {
+    setCommentInputs(prev => ({
+      ...prev,
+      [forumId]: value
+    }));
+  };
+
+  const handleCommentSubmit = async (e, forumId) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      setPosts(
-        posts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: [
-                  ...post.comments,
-                  {
-                    id: post.comments.length + 1,
-                    author: 'Current User',
-                    avatar: '/placeholder.svg',
-                    content: newComment,
-                    timestamp: 'Just now',
-                    replies: [],
-                  },
-                ],
-                replies: post.replies + 1,
-              }
-            : post
-        )
-      );
-      setNewComment('');
+    const commentText = commentInputs[forumId];
+    if (commentText?.trim()) {
+      try {
+        const commentData = {
+          author: TEMP_USER_ID,
+          content: commentText.trim()
+        };
+
+        console.log('Sending request to:', `${API_BASE_URL}/${forumId}/posts`);
+        console.log('With data:', JSON.stringify(commentData, null, 2));
+
+        const response = await axios.post(
+          `${API_BASE_URL}/${forumId}/posts`,
+          commentData
+        );
+
+        setPosts(
+          posts.map((post) =>
+            post._id === forumId
+              ? response.data
+              : post
+          )
+        );
+        setCommentInputs(prev => ({
+          ...prev,
+          [forumId]: ''
+        }));
+      } catch (error) {
+        console.error('Error details:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+        alert(`Failed to add comment: ${error.response?.data?.message || error.message}`);
+      }
     }
   };
 
-  const handleReplySubmit = (e, postId, commentId) => {
+  const handleReplySubmit = async (e, forumId, postId) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      setPosts(
-        posts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: post.comments.map((comment) =>
-                  comment.id === commentId
-                    ? {
-                        ...comment,
-                        replies: [
-                          ...comment.replies,
-                          {
-                            id: comment.replies.length + 1,
-                            author: 'Current User',
-                            avatar: '/placeholder.svg',
-                            content: newComment,
-                            timestamp: 'Just now',
-                          },
-                        ],
-                      }
-                    : comment
-                ),
-              }
-            : post
-        )
-      );
-      setNewComment('');
-      setReplyingTo(null);
+    const replyText = commentInputs[`${forumId}-${postId}`];
+    if (replyText?.trim()) {
+      try {
+        const replyData = {
+          postId,
+          author: TEMP_USER_ID,
+          content: replyText.trim()
+        };
+
+        const response = await axios.post(
+          `${API_BASE_URL}/${forumId}/posts/${postId}/comments`,
+          replyData
+        );
+
+        setPosts(
+          posts.map((post) =>
+            post._id === forumId
+              ? response.data
+              : post
+          )
+        );
+        setCommentInputs(prev => ({
+          ...prev,
+          [`${forumId}-${postId}`]: ''
+        }));
+        setReplyingTo(null);
+      } catch (error) {
+        console.error('Error adding reply:', error);
+        alert('Failed to add reply');
+      }
     }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -187,12 +191,21 @@ function ExpertForum() {
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handlePostSubmit} className="space-y-4">
-            <textarea
-              className="w-full min-h-[120px] p-3 rounded-lg border resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Hey everyone! 👋\nShare your thoughts..."
-              value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
-            />
+            <div className="space-y-2">
+              <Input
+                type="text"
+                placeholder="Discussion Title"
+                value={postTitle}
+                onChange={(e) => setPostTitle(e.target.value)}
+                className="w-full"
+              />
+              <textarea
+                className="w-full min-h-[120px] p-3 rounded-lg border resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Write your discussion description here..."
+                value={postDescription}
+                onChange={(e) => setPostDescription(e.target.value)}
+              />
+            </div>
             <div className="flex flex-wrap gap-2 items-center">
               {tags.map((tag) => (
                 <Badge key={tag} variant="secondary">
@@ -253,91 +266,105 @@ function ExpertForum() {
             </TabsList>
             <TabsContent value="post">
               {posts.map((post) => (
-                <div key={post.id} className="space-y-4 border-b pb-4">
+                <div key={post._id} className="space-y-4 border-b pb-4">
                   <div className="flex space-x-4">
                     <Avatar>
                       <AvatarImage
-                        src={post.avatar}
-                        alt={`${post.author}'s avatar`}
+                        src="/placeholder.svg"
+                        alt="User avatar"
                       />
-                      <AvatarFallback>{post.author[0]}</AvatarFallback>
+                      <AvatarFallback>U</AvatarFallback>
                     </Avatar>
                     <div>
                       <h4 className="font-semibold">{post.title}</h4>
-                      <p className="text-gray-600">{post.content}</p>
+                      <p className="text-gray-600">{post.description}</p>
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
-                        <span>{post.timestamp}</span>
+                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                         <span>
                           <MessageSquare className="inline-block h-4 w-4" />{' '}
-                          {post.replies}
+                          {post.posts?.length || 0}
                         </span>
-                        <span>
-                          <Eye className="inline-block h-4 w-4" /> {post.views}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {post.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
                       </div>
                     </div>
                   </div>
                   <div className="mt-4 space-y-2">
-                    {post.comments.map((comment) => (
-                      <div key={comment.id} className="pl-6 border-l space-y-2">
+                    {post.posts?.map((comment) => (
+                      <div key={comment._id} className="pl-6 border-l space-y-2">
                         <div className="flex space-x-4">
                           <Avatar>
                             <AvatarImage
-                              src={comment.avatar}
-                              alt={`${comment.author}'s avatar`}
+                              src="/placeholder.svg"
+                              alt="User avatar"
                             />
-                            <AvatarFallback>{comment.author[0]}</AvatarFallback>
+                            <AvatarFallback>U</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{comment.author}</p>
+                            <p className="font-medium">User</p>
                             <p className="text-gray-600">{comment.content}</p>
                             <span className="text-sm text-gray-500">
-                              {comment.timestamp}
+                              {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(comment._id)}
+                              className="text-sm text-gray-500"
+                            >
+                              Reply
+                            </Button>
                           </div>
                         </div>
-                        {comment.replies.map((reply) => (
+                        {comment.comments?.map((reply) => (
                           <div
-                            key={reply.id}
+                            key={reply._id}
                             className="pl-6 border-l space-y-2"
                           >
                             <div className="flex space-x-4">
                               <Avatar>
                                 <AvatarImage
-                                  src={reply.avatar}
-                                  alt={`${reply.author}'s avatar`}
+                                  src="/placeholder.svg"
+                                  alt="User avatar"
                                 />
-                                <AvatarFallback>
-                                  {reply.author[0]}
-                                </AvatarFallback>
+                                <AvatarFallback>U</AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{reply.author}</p>
+                                <p className="font-medium">User</p>
                                 <p className="text-gray-600">{reply.content}</p>
                                 <span className="text-sm text-gray-500">
-                                  {reply.timestamp}
+                                  {new Date(reply.createdAt).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
                           </div>
                         ))}
+                        {replyingTo === comment._id && (
+                          <form
+                            onSubmit={(e) => handleReplySubmit(e, post._id, comment._id)}
+                            className="flex items-center mt-2 pl-6"
+                          >
+                            <Input
+                              placeholder="Write a reply..."
+                              value={commentInputs[`${post._id}-${comment._id}`] || ''}
+                              onChange={(e) => 
+                                handleCommentInputChange(`${post._id}-${comment._id}`, e.target.value)
+                              }
+                              className="w-full"
+                            />
+                            <Button type="submit" variant="ghost">
+                              <Send className="h-5 w-5" />
+                            </Button>
+                          </form>
+                        )}
                       </div>
                     ))}
                     <form
-                      onSubmit={(e) => handleCommentSubmit(e, post.id)}
+                      onSubmit={(e) => handleCommentSubmit(e, post._id)}
                       className="flex items-center mt-2"
                     >
                       <Input
                         placeholder="Add a comment..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
+                        value={commentInputs[post._id] || ''}
+                        onChange={(e) => handleCommentInputChange(post._id, e.target.value)}
                         className="w-full"
                       />
                       <Button type="submit" variant="ghost">
@@ -357,3 +384,4 @@ function ExpertForum() {
 }
 
 export default ExpertForum;
+

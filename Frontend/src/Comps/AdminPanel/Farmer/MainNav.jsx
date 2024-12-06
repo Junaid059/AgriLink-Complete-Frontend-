@@ -7,11 +7,11 @@ export function MainNav() {
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
-            <img
+            {/* <img
               src="/placeholder.svg"
               alt="AgriLink Logo"
               className="h-8 w-8"
-            />
+            /> */}
             <span className="font-bold text-green-600">AgriLink</span>
           </Link>
         </div>

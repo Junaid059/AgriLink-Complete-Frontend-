@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
-const ChatScreen = ({ chatId, userId }) => {
+const ChatScreen2 = () => {
+  const [chatId, setChatID] = useState('6751c90c7f4de71db8412d74');
+  const [userId, setUserID] = useState('6751be027f4de71db840ea69');
+  console.log('chatId: ', chatId);
+  console.log('userId: ', userId);
   const [chat, setChat] = useState(null);
   const [newMessage, setNewMessage] = useState('');
-  const [users, setUsers] = useState({});
-  const API_BASE = 'https://database-microservice-agrilink.onrender.com';
+  const API_BASE = 'https://database-microservice-agrilink.onrender.com/chats';
 
   useEffect(() => {
-    fetchUsers();
     if (chatId) fetchChat();
   }, [chatId]);
 
@@ -19,24 +21,9 @@ const ChatScreen = ({ chatId, userId }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/users`);
-      const data = await response.json();
-      // Convert array to object with userId as key for easier lookup
-      const usersMap = data.reduce((acc, user) => {
-        acc[user._id] = user;
-        return acc;
-      }, {});
-      setUsers(usersMap);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
-
   const fetchChat = async () => {
     try {
-      const response = await fetch(`${API_BASE}/chats/${chatId}`);
+      const response = await fetch(`${API_BASE}/${chatId}`);
       const data = await response.json();
       setChat(data);
     } catch (error) {
@@ -49,7 +36,7 @@ const ChatScreen = ({ chatId, userId }) => {
     if (!newMessage.trim()) return;
 
     try {
-      await fetch(`${API_BASE}/chats/${chatId}/messages`, {
+      await fetch(`${API_BASE}/${chatId}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,46 +53,10 @@ const ChatScreen = ({ chatId, userId }) => {
     }
   };
 
-  const formatMessageDate = (dateString) => {
-    const messageDate = new Date(dateString);
-    const now = new Date();
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const timeString = messageDate.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-
-    if (messageDate.toDateString() === now.toDateString()) {
-      return timeString;
-    }
-
-    if (messageDate.toDateString() === yesterday.toDateString()) {
-      return `Yesterday ${timeString}`;
-    }
-
-    return `${messageDate.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit',
-    })} ${timeString}`;
-  };
-
-  const getUserName = (senderId) => {
-    return users[senderId]?.username || 'Unknown User';
-  };
-
   return (
-    <div className="flex flex-col h-screen max-w-5xl mx-auto bg-gray-50 rounded-lg">
+    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-gray-100">
       <div className="p-4 border-b bg-card">
-        <h1 className="text-xl font-semibold text-card-foreground">
-          {chat?.participants
-            ?.map((id) => getUserName(id))
-            .filter((name) => name !== getUserName(userId))
-            .join(', ')}
-        </h1>
+        <h1 className="text-xl font-semibold text-card-foreground">Chat</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -120,18 +71,10 @@ const ChatScreen = ({ chatId, userId }) => {
               className={`max-w-[70%] rounded-lg p-3 ${
                 message.sender === userId
                   ? 'bg-primary text-white rounded-br-none'
-                  : 'bg-gray-700 text-white rounded-bl-none'
+                  : 'bg-card text-card-foreground rounded-bl-none'
               }`}
             >
-              {message.sender !== userId && (
-                <p className="text-xs font-medium text-gray-300 mb-1">
-                  {getUserName(message.sender)}
-                </p>
-              )}
-              <p className="text-md">{message.content}</p>
-              <p className="text-xs text-gray-300 mt-1">
-                {formatMessageDate(message.createdAt)}
-              </p>
+              <p className="text-sm">{message.content}</p>
             </div>
           </div>
         ))}
@@ -158,4 +101,4 @@ const ChatScreen = ({ chatId, userId }) => {
   );
 };
 
-export default ChatScreen;
+export default ChatScreen2;

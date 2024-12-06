@@ -17,6 +17,8 @@ import Product from './Comps/marketplace/Product.jsx';
 import Service from './Comps/service/service';
 import Tools from './Comps/service/tools';
 import Chat from './Comps/collaboration/Chat';
+import ChatScreen2 from './Comps/collaboration/Chat2';
+import ChatList from './Comps/collaboration/ChatList';
 import Blog from './Comps/collaboration/blog';
 import FeedbackForm from './Comps/supportAndFeedBack/FeedbackForm';
 import WeatherDashboard from './Comps/weather/WeatherDashboard';
@@ -32,35 +34,30 @@ import ProfilePage from './Comps/Crops/ProfilePage';
 import LoanPage from './Comps/loan/LoanPage';
 import ExpertForum from './Comps/collaboration/ExpertForum';
 import Page from './Comps/AdminPanel/SupplyChain/Page';
-import { AuthContext } from './Comps/context/AuthContext';
-import { AuthProvider } from './Comps/context/AuthContext';
-import AdminHeader from './Comps/AdminHeader';
+
 import ManagementPage from './Comps/AdminPanel/Management/ManagementPage';
 import FarmerDashboardPage from './Comps/AdminPanel/Farmer/FarmerDashboardPage';
 import FarmerProfilePage from './Comps/AdminPanel/Farmer/FarmerProfilePage';
 import AdminDashboard from './Comps/AdminPanel/AdminDashboard/AdminDashboard';
 import AdminLayout from './Comps/AdminPanel/AdminDashboard/AdminLayout';
+import ChartsPage from './Comps/AdminPanel/AdminDashboard/ChartsPage';
+import TablePage from './Comps/AdminPanel/AdminDashboard/TablePage';
+import FormPage from './Comps/AdminPanel/AdminDashboard/FormPage';
+import ProductsPage from './Comps/AdminPanel/AdminDashboard/ProductPage';
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = true; // Replace with actual authentication check
-  return isAuthenticated ? children : <Navigate to="/signup" />;
+  const role = localStorage.getItem('role');
+  if (!role) {
+    return <Navigate to="/login" />;
+  }
+  return children;
 }
 
-// function AdminProtectedRoute({ children }) {
-//   const { role } = useContext(AuthContext); // Context-based role check
-//   console.log('Current role:', role); // Log role to debug
-//   return role === 'admin' ? children : <Navigate to="/admin-panel" />;
-// }
-
 function AppLayout() {
-  // const { role } = useContext(AuthContext);
   return (
     <>
-      {/* {role === 'admin' ? <AdminHeader /> : <UserHeader />} */}
       <UserHeader />
-      {/* <AdminHeader/> */}
       <Outlet />
-      {/* <Chat/> */}
     </>
   );
 }
@@ -70,7 +67,8 @@ const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
-      { path: '/signup', element: <LoginSignup /> },
+      { index: true, path: '/', element: <Navigate to="/login" /> },
+      { path: 'login', element: <LoginSignup /> },
       {
         path: '/',
         element: (
@@ -84,6 +82,30 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Market />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <Chat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chat2',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatScreen2 />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/chats',
+        element: (
+          <ProtectedRoute requiredRole="user">
+            <ChatList />
           </ProtectedRoute>
         ),
       },
@@ -207,56 +229,43 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: '/admin-panel',
-        element: (
-          <ProtectedRoute>
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/supply-chain',
-        element: (
-          <ProtectedRoute>
-            <Page />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/gov-dashboard',
-        element: (
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/Management',
-        element: (
-          <ProtectedRoute>
-            <ManagementPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/farmer',
-        element: (
-          <ProtectedRoute>
-            <FarmerDashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/farmer-Profile',
-        element: (
-          <ProtectedRoute>
-            <FarmerProfilePage />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: '/farmer',
+      //   element: (
+      //     <ProtectedRoute>
+      //       <FarmerDashboardPage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      // {
+      //   path: '/farmer-Profile',
+      //   element: (
+      //     <ProtectedRoute>
+      //       <FarmerProfilePage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+    ],
+  },
+  {
+    path: '/admin-panel',
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: 'home', element: <AdminDashboard /> },
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'charts', element: <ChartsPage /> },
+      { path: 'gov-dashboard', element: <DashboardPage /> },
+      { path: 'management', element: <ManagementPage /> },
+      { path: 'farmer', element: <FarmerDashboardPage /> },
+      { path: 'farmer-profile', element: <FarmerProfilePage /> },
+      { path: 'supply-chain', element: <Page /> },
+      { path: 'table', element: <TablePage /> },
+      { path: 'form', element: <FormPage /> },
     ],
   },
 ]);
