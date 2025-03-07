@@ -8,17 +8,21 @@ const Notifications = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-   
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('https://database-microservice-agrilink.onrender.com/notifications');
+        const response = await fetch(
+          'https://database-microservice-agrilink.onrender.com/notifications'
+        );
         if (!response.ok) {
           throw new Error('Failed to fetch notifications');
         }
         const data = await response.json();
-        const unreadNotifications = data.filter((notification) => !notification.isRead && notification.user=="67520df8e097dedca2d7fa51");
+        const unreadNotifications = data.filter(
+          (notification) =>
+            !notification.isRead &&
+            notification.user == '67520df8e097dedca2d7fa51'
+        );
         setNotifications(unreadNotifications);
-        
       } catch (error) {
         console.error('Error fetching notifications:', error);
       } finally {
@@ -31,18 +35,21 @@ const Notifications = ({ onClose }) => {
 
   const markAsRead = async (notification) => {
     try {
-      const response = await fetch(`https://database-microservice-agrilink.onrender.com/notifications/${notification._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: notification.user,
-          type: notification.type,
-          message: notification.message,
-          isRead: true, 
-        }),
-      });
+      const response = await fetch(
+        `https://database-microservice-agrilink.onrender.com/notifications/${notification._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: notification.user,
+            type: notification.type,
+            message: notification.message,
+            isRead: true,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to update notification');
@@ -70,7 +77,10 @@ const Notifications = ({ onClose }) => {
           <p>Loading notifications...</p>
         ) : notifications.length > 0 ? (
           notifications.map((notification) => (
-            <Card key={notification._id} className="mb-2 p-3 border flex justify-between items-center">
+            <Card
+              key={notification._id}
+              className="mb-2 p-3 border flex justify-between items-center"
+            >
               <div>
                 <p className="text-gray-700">{notification.message}</p>
                 <p className="text-xs text-gray-500">{notification.date}</p>
